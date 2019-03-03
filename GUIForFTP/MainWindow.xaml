@@ -5,8 +5,102 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GUIForFTP"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="MainWindow" Height="450" Width="800"
+        ResizeMode="CanMinimize">
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="15"/>
+        </Style>
+    </Window.Resources>
+    <TabControl>
+        <TabItem Header="Настройки подключения">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="0.3*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="0.3*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical">
+                    <Label Content="Адрес сервера:"/>
+                    <TextBox MinWidth="350"/>
+
+                    <Label Content="Порт сервера:"/>
+                    <TextBox MinWidth="100" />
+                </StackPanel>
+                <Button Grid.Row="1" Grid.Column="1" Content="Подключиться"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Файлы">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="72*"/>
+                    <ColumnDefinition Width="491*"/>
+                    <ColumnDefinition Width="225*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.3*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="0.4*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Vertical" Grid.ColumnSpan="2" Margin="0,0,0.2,230.2" Grid.RowSpan="2">
+                    <Label Content="Папка в файловой системе для скачивания файлов:"/>
+                    <TextBox Width="550" TextWrapping="Wrap" Margin="2"/>
+                </StackPanel>
+
+                <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="2" Margin="2">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <Button Grid.Row="0" Grid.Column="2" Content="Скачать все файлы"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Загрузки">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.07*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" Content="Скачиваются"/>
+                <Label Grid.Row="0" Grid.Column="1" Content="Скачались"/>
+
+                <ListBox Grid.Row="1" Grid.Column="0" Margin="2" 
+                         >
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <ListBox Grid.Row="1" Grid.Column="1" Margin="2" 
+                         >
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Справка">
+            <StackPanel>
+                <TextBlock>Двойной клик ЛКМ по файлу - скачать файл.</TextBlock>
+                <TextBlock>Двойной клик ЛКМ по папке - открыть папку.</TextBlock>
+            </StackPanel>
+        </TabItem>
+    </TabControl>
 </Window>
