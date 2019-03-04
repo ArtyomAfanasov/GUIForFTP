@@ -14,26 +14,29 @@
         <Style TargetType="Button">
             <Setter Property="Margin" Value="15"/>
         </Style>
+        <local:ViewModel x:Key="viewModel"/>
     </Window.Resources>
     <TabControl>
         <TabItem Header="Настройки подключения">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="0.3*"/>
+                    <ColumnDefinition Width="88*"/>
+                    <ColumnDefinition Width="215*"/>
+                    <ColumnDefinition Width="91*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="0.3*"/>
                 </Grid.RowDefinitions>
-                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical">
+                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Grid.ColumnSpan="2" Margin="0,0.2,0.4,0.2">
                     <Label Content="Адрес сервера:"/>
-                    <TextBox MinWidth="350"/>
+                    <TextBox MinWidth="350" Text="{Binding Source={StaticResource viewModel}, Path=Address, Mode=OneWayToSource}"/>
 
                     <Label Content="Порт сервера:"/>
-                    <TextBox MinWidth="100" />
+                    <TextBox MinWidth="100" Text="{Binding Source={StaticResource viewModel}, Path=Port, Mode=OneWayToSource}"/>
                 </StackPanel>
-                <Button Grid.Row="1" Grid.Column="1" Content="Подключиться"/>
+                <Button Grid.Row="1" Grid.Column="2" Content="Подключиться"
+                        Name="buttonConnect" MouseUp="buttonConnect_MouseUp" Margin="14.6,15.2,15,15.2"/>
             </Grid>
         </TabItem>
         <TabItem Header="Файлы">
@@ -53,13 +56,8 @@
                     <TextBox Width="550" TextWrapping="Wrap" Margin="2"/>
                 </StackPanel>
 
-                <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="2" Margin="2">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="2" Margin="2"
+                         Name="listBox" ItemsSource="{Binding Path=DirectoriesAndFiles, Mode=OneWay}"/>
 
                 <Button Grid.Row="0" Grid.Column="2" Content="Скачать все файлы"/>
             </Grid>
