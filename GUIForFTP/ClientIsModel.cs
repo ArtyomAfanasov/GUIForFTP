@@ -7,6 +7,7 @@
     using System.IO;
     using System.Net.Sockets;
     using System.Runtime.CompilerServices;
+    using System.Threading.Tasks;
     using System.Windows;
 
     class ClientIsModel
@@ -56,9 +57,9 @@
         private string currentServerPath = "";
 
         /// <summary>
-        /// Путь на предыдущем шаге
+        /// Путь для сохранения файлов (объект из класса модели)
         /// </summary>
-        private string previousServerPath = "";
+        public string pathToSaveFileModel = "";
 
         /// <summary>
         /// Получить путь, на который смотрит сервер
@@ -67,10 +68,10 @@
         {
             if (serverPath == "")
             {
-                using (var client = new TcpClient(modelAddress, Convert.ToInt32(modelPort)))
+                try
                 {
-                    try
-                    {
+                    using (var client = new TcpClient(modelAddress, Convert.ToInt32(modelPort)))
+                    {                    
                         var stream = client.GetStream();
                         var writer = new StreamWriter(stream);
                         writer.WriteLine("path");
@@ -80,12 +81,12 @@
                         var reader = new StreamReader(stream);  // получили путь, если его не было
                         serverPath = reader.ReadLine();
 
-                        currentServerPath = serverPath;
+                        currentServerPath = serverPath;                    
                     }
-                    catch (Exception e)
-                    {
-                        MessageBox.Show(e.Message);
-                    }
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
                 }
             }
         }
@@ -118,11 +119,10 @@
 
             // Надо сделать корректный путь
             //-------------------------------------
-
-            using (var client = new TcpClient(modelAddress, Convert.ToInt32(modelPort)))
-            {                
-                try
-                {
+            try
+            {
+                using (var client = new TcpClient(modelAddress, Convert.ToInt32(modelPort)))
+                {                                
                     var stream = client.GetStream();
                     var writer = new StreamWriter(stream);
                     writer.WriteLine("Listing");
@@ -159,12 +159,12 @@
                             directoriesAndFiles.Add(element);
                             isDirectory.Add(false);
                         }
-                    }                    
+                    }                                    
                 }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.Message);
-                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
             }
 
             viewModel.isDirectory = isDirectory;
@@ -172,22 +172,29 @@
             return directoriesAndFiles;
         }
         
-        public void DownloadFile()
+        public void DownloadFile(string fileName)
         {
-            using (var client = new TcpClient(modelAddress, Convert.ToInt32(modelPort)))
+            try
             {
-                try
-                {
+                using (var client = new TcpClient(modelAddress, Convert.ToInt32(modelPort)))
+                {                
                     var stream = client.GetStream();
                     var writer = new StreamWriter(stream);
                     writer.WriteLine("Download");
-                    writer.WriteLine(serverPath); // +  название файла ПРИПИЛИ
+                    writer.WriteLine(currentServerPath + @"\" + fileName); 
                     writer.Flush();
-                }
-                catch
-                {
 
+                    var reader = new StreamReader(stream);
+                    var content = reader.ReadToEnd();
+
+                    var textFile = new StreamWriter(pathToSaveFileModel + @"\" + fileName);
+                    textFile.WriteLine(content);                    
+                    textFile.Close();                    
                 }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
             }
         }
     }

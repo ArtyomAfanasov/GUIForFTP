@@ -71,8 +71,25 @@ namespace GUIForFTP
                 port = value;                
             }
         }
-            
-        // todo
+
+        private string pathToSaveFile;
+
+        /// <summary>
+        /// Путь для сохранения файлов
+        /// </summary>
+        public string PathToSaveFile
+        {
+            get => pathToSaveFile;
+            set
+            {
+                pathToSaveFile = value;
+                if (clientIsModel != null)
+                {
+                    clientIsModel.pathToSaveFileModel = pathToSaveFile;
+                }                
+            }
+        }
+                    
         public void Connect(string portFromThisViewModel, string addressFromThisViewModel)
         {
             clientIsModel = new ClientIsModel(portFromThisViewModel, addressFromThisViewModel, this);
@@ -94,6 +111,11 @@ namespace GUIForFTP
             {
                 DirectoriesAndFiles.Add(dirThenFile);
             }            
+        }
+
+        public void DownloadFile(string fileName)
+        {
+            clientIsModel.DownloadFile(fileName);
         }
     }
 }

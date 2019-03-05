@@ -24,11 +24,7 @@
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = viewModel;
-            
-            /*AddHandler(Window.MouseUpEvent,
-            new MouseButtonEventHandler(buttonConnect_MouseUp),
-            true);*/
+            DataContext = viewModel;                        
         }
 
         /// <summary>
@@ -49,18 +45,14 @@
                 return;
             }
 
-            if ( viewModel.isDirectory[((ListBox)sender).SelectedIndex] )    // если это директория
+            if ( viewModel.isDirectory[((ListBox)sender).SelectedIndex] )    
             {                
-                viewModel.UpdateDirectoriesTree(((ListBox)sender).SelectedItem.ToString()); // todooooooo
+                viewModel.UpdateDirectoriesTree(((ListBox)sender).SelectedItem.ToString()); 
             }
-            
-
-            //if (listBox.SelectedItem.ToString() == "/")
-            //{
-                // после viewModel.UpdateDirectoriesTree();
-            //}
-
-            //var fileName = listBox.SelectedItem.ToString();                
+            else
+            {
+                viewModel.DownloadFile(((ListBox)sender).SelectedItem.ToString());
+            }                                      
         }
     }
 }
