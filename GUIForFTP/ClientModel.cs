@@ -3,10 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.ComponentModel;
     using System.IO;
     using System.Net.Sockets;
-    using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Threading;
@@ -98,7 +96,7 @@
         }
         
         /// <summary>
-        /// Получение дерева директорий
+        /// Запрос серверу о получении коллекции файлов и папок 
         /// </summary>
         public async Task<ObservableCollection<string>> ShowDirectoriesTree(bool isUpdateTree, string addDirectoryToServerPath)
         {
@@ -172,6 +170,10 @@
             return directoriesAndFiles;
         }
         
+        /// <summary>
+        /// Запрос серверу на скачивание файла
+        /// </summary>
+        /// <param name="fileName"></param>        
         public async Task DownloadFile(string fileName)
         {
             try
@@ -204,6 +206,9 @@
             }
         }
 
+        /// <summary>
+        /// Запрос серверу о необходимости скачать все файлы в директории
+        /// </summary>        
         public async Task DownloadAllFiles()
         {
             DirectoryInfo directoryInfo;

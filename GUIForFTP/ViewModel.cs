@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Threading;
-
-namespace GUIForFTP
+﻿namespace GUIForFTP
 {
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Threading.Tasks;
+    using System.Windows;
+
     /// <summary>
     /// Класс, соединяющий модель и представление
     /// </summary>
@@ -73,6 +66,11 @@ namespace GUIForFTP
             }
         }
                     
+        /// <summary>
+        /// Подключиться к серверу
+        /// </summary>
+        /// <param name="portFromThisViewModel">Порт, полученный от Vm</param>
+        /// <param name="addressFromThisViewModel">Адресс, полученный от VM</param>
         public async void Connect(string portFromThisViewModel, string addressFromThisViewModel)
         {
             DirectoriesAndFiles.Clear();
@@ -86,6 +84,10 @@ namespace GUIForFTP
             }
         }
 
+        /// <summary>
+        /// Сообщить модели об изменении представления катологов
+        /// </summary>
+        /// <param name="addDirectoryToServerPath"></param>
         public async void UpdateDirectoriesTree(string addDirectoryToServerPath)
         {
             var tree = await clientModel.ShowDirectoriesTree(true, addDirectoryToServerPath); // TODO!
@@ -97,6 +99,10 @@ namespace GUIForFTP
             }            
         }
 
+        /// <summary>
+        /// Передать модели информации о необходимости скачать файл
+        /// </summary>
+        /// <param name="fileName"></param>
         public async void DownloadFile(string fileName)
         {
             try
@@ -109,6 +115,10 @@ namespace GUIForFTP
             }            
         }
 
+        /// <summary>
+        /// Сообщить модели скачать все файлы
+        /// </summary>
+        /// <returns></returns>
         public async Task DownloadAllFiles()
         {
             await clientModel.DownloadAllFiles();
