@@ -64,7 +64,8 @@
         /// <summary>
         /// Путь для сохранения файлов (объект из класса модели)
         /// </summary>
-        public string pathToSaveFileModel = "";
+        public string pathToSaveFileModel = new DirectoryInfo(Directory.GetCurrentDirectory()).
+                                    Parent.Parent.FullName + @"\Donwload";
 
         /// <summary>
         /// Получить путь, на который смотрит сервер
@@ -73,6 +74,7 @@
         {
             if (serverPath == "")
             {
+                Directory.CreateDirectory(pathToSaveFileModel);
                 try
                 {
                     using (var client = new TcpClient(modelAddress, Convert.ToInt32(modelPort)))
@@ -193,9 +195,9 @@
                     viewModel.DownloadingFiles.Add(fileName);
 
                     var reader = new StreamReader(stream);
-                    var content = await reader.ReadToEndAsync();
+                    var content = reader.ReadToEnd();
 
-                    var textFile = new StreamWriter(fileName);
+                    var textFile = new StreamWriter(pathToSaveFileModel + @"\" + fileName);
                     textFile.WriteLine(content);                    
                     textFile.Close();            
                     
