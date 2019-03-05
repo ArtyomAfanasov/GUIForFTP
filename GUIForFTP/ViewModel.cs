@@ -25,10 +25,10 @@ namespace GUIForFTP
         private ClientIsModel clientIsModel;
 
         /// <summary>
-        /// Коллекция 
+        /// Коллекция директорий и папок для изменения View
         /// </summary>                      
-        public ObservableCollection<string> DirectoriesAndFiles { get;
-            set; }
+        public ObservableCollection<string> DirectoriesAndFiles { get; set; } 
+            = new ObservableCollection<string>() { "/" };
 
         /// <summary>
         /// Уведомляет систему об изменении свойств.
@@ -71,8 +71,13 @@ namespace GUIForFTP
         public void Connect(string portFromThisViewModel, string addressFromThisViewModel)
         {
             clientIsModel = new ClientIsModel(portFromThisViewModel, addressFromThisViewModel, this);
-        
-            clientIsModel.OnConnectionShowDirectoriesTree();
+            
+            var tree = clientIsModel.OnConnectionShowDirectoriesTree();
+
+            foreach (string dirOrFile in tree)
+            {
+                DirectoriesAndFiles.Add(dirOrFile);
+            }
         }
 
         public void UpdateDirectoriesTree()

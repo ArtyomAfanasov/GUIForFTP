@@ -43,7 +43,7 @@
         /// <summary>
         /// Получение дерева директорий
         /// </summary>
-        public void OnConnectionShowDirectoriesTree()
+        public ObservableCollection<string> OnConnectionShowDirectoriesTree()
         {
             if (serverPath == "")
             {
@@ -92,15 +92,15 @@
                     foreach (string element in filesArray)
                     {
                         directoriesAndFiles.Add(element);
-                    }
-
-                    viewModel.DirectoriesAndFiles = directoriesAndFiles;
+                    }                    
                 }
                 catch (Exception e)
                 {
                     MessageBox.Show(e.Message);
                 }
             }
+
+            return directoriesAndFiles;
         }                                              
     }
 }

@@ -61,7 +61,7 @@
                 </StackPanel>
 
                 <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="2" Margin="2"
-                         Name="listBox" ItemsSource="{Binding Path=DirectoriesAndFiles, Mode=OneWay}"
+                         x:Name="listBox" ItemsSource="{Binding Path=DirectoriesAndFiles, Mode=OneWay}"
                          MouseDoubleClick="listBox_MouseDoubleClick"/>
 
                 <Button Grid.Row="0" Grid.Column="2" Content="Скачать все файлы"/>
