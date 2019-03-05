@@ -15,13 +15,8 @@ namespace GUIForFTP
     /// <summary>
     /// Класс, соединяющий модель и представление
     /// </summary>
-    class ViewModel : INotifyPropertyChanged
-    {           
-        /// <summary>
-        /// Объект для уведомления изменения свойств объекта
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
+    class ViewModel
+    {                   
         /// <summary>
         /// Объект Model
         /// </summary>
@@ -48,17 +43,7 @@ namespace GUIForFTP
         /// <summary>
         /// Коллекция флагов, определяющих директорию
         /// </summary>
-        public List<bool> isDirectory = new List<bool>();
-
-        /// <summary>
-        /// Уведомляет систему об изменении свойств.
-        /// А система обновляет привязанные элементы
-        /// </summary>
-        /// <param name="changedProperty"></param>
-        public void OnPropertyChanged([CallerMemberName]string changedProperty = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(changedProperty));
-        }
+        public List<bool> isDirectory = new List<bool>();        
        
         /// <summary>
         /// Адрес сервера

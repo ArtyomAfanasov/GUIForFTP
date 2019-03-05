@@ -41,9 +41,9 @@
 
         private void listBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (((ListBox)sender).SelectedItem.ToString() == "/")
+            if (((ListBox)sender).SelectedItem.ToString() == "..")
             {
-                viewModel.UpdateDirectoriesTree("/");
+                viewModel.UpdateDirectoriesTree("..");
                 return;
             }
 

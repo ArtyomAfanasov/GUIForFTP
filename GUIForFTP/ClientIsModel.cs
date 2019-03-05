@@ -16,12 +16,12 @@
         /// <summary>
         /// Порт сервера
         /// </summary>
-        public readonly string modelPort;
+        private readonly string modelPort;
 
         /// <summary>
         /// Адрес сервера
         /// </summary>
-        public readonly string modelAddress;
+        private readonly string modelAddress;
 
         private readonly ViewModel viewModel;
 
@@ -139,7 +139,7 @@
 
                     if (currentServerPath != serverPath)
                     {
-                        directoriesAndFiles.Add("/");
+                        directoriesAndFiles.Add("..");
                         isDirectory.Add(false);
                     }
                     foreach (string element in dirsArray)
