@@ -116,8 +116,7 @@
             catch (DirectoryNotFoundException e)
             {
                 return new string[1] { "size=-1" };
-            }
-            
+            }            
         }      
         
         /// <summary>
@@ -192,43 +191,49 @@
                 }               
             }            
         }
-      
-        private string[] ListDirecories(string path)
+
+        // todo Массив из трёх элементов. Во 2ом - папки в 3ем - файлы
+        /// <summary>
+        /// Получить массив файлов и папок
+        /// </summary>
+        /// <param name="path">Путь к директории</param>
+        /// <returns>
+        /// Трёхэлементный массив, где 
+        /// на нулевом месте - кол-во файлов и папок в директории
+        /// на первом месте - папки
+        /// на втором месте - файлы
+        /// 
+        /// Если директория не найдена, то вернётся одноэлементый массив с элементом "size=-1"
+        /// </returns>
+        private string[] GetArrayOfFilesAndDirectoies(string path)
         {
+            DirectoryInfo directoryInfo;
+
             try
             {
-                FileSystemInfo[] filesAndDirectories;
-
-                if (Directory.Exists(path))
-                {
-                    var answer = new string[3];
-                    var isDir = "isDir?-false";
-                    var info = new DirectoryInfo(path);
-                    
-                    int countFileAndDirectorys;
-
-                    filesAndDirectories = info.GetFileSystemInfos();
-                    countFileAndDirectorys = filesAndDirectories.Length;
-
-                    answer[0] = "size=" + countFileAndDirectorys.ToString();
-                    answer[1] = "Папка-" + info.Name;
-
-                    isDir = "isDir?-true";
-
-                    answer[2] = isDir;
-
-                    return answer;
-                }                
-                else
-                {
-                    return new string[1] { "size=-1" };
-                }                
+                directoryInfo = new DirectoryInfo(path);
             }
-            catch (DirectoryNotFoundException e)
+            catch (DirectoryNotFoundException)
             {
-                return new string[1] { $"Ошибка-{ e.Message }" };
+                return new string[] { "size=-1" };
             }
 
+            var countFileAndDirectorys = directoryInfo.GetFileSystemInfos().Length;
+            var answer = new string[3];
+
+            answer[0] = countFileAndDirectorys.ToString();
+
+            foreach (DirectoryInfo directory in directoryInfo.GetDirectories())
+            {
+                answer[1] += directory.Name + " ";
+            }
+
+            foreach (FileInfo file in directoryInfo.GetFiles())
+            {
+                answer[2] += file.Name + " ";
+            }
+
+            return answer;
         }
     }
 }
