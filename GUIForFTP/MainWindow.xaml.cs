@@ -57,9 +57,9 @@
             }                                      
         }
 
-        private void buttonDownloadAll_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        private async void buttonDownloadAll_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
-            viewModel.DownloadAllFiles();
+            await viewModel.DownloadAllFiles();
         }
     }
 }

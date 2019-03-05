@@ -124,7 +124,7 @@ namespace GUIForFTP
             }            
         }
 
-        public async void DownloadAllFiles()
+        public async Task DownloadAllFiles()
         {
             await clientIsModel.DownloadAllFiles();
         }
