@@ -24,7 +24,9 @@
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = viewModel;                        
+            DataContext = viewModel;
+            viewModel.Port = "8888";
+            viewModel.Address = "127.0.0.1";
         }
 
         /// <summary>

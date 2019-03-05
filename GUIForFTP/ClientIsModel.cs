@@ -63,30 +63,31 @@
         /// Путь для сохранения файлов (объект из класса модели)
         /// </summary>
         public string pathToSaveFileModel = new DirectoryInfo(Directory.GetCurrentDirectory()).
-                                    Parent.Parent.FullName + @"\Donwload";
+                                    Parent.Parent.Parent.Parent.FullName + @"\Donwload";
 
         /// <summary>
         /// Получить путь, на который смотрит сервер
         /// </summary>
-        private void GetServerPath()
+        private async Task GetServerPath()
         {
             if (serverPath == "")
-            {
-                Directory.CreateDirectory(pathToSaveFileModel);
+            {                
                 try
                 {
-                    using (var client = new TcpClient(modelAddress, Convert.ToInt32(modelPort)))
-                    {                    
+                    Directory.CreateDirectory(pathToSaveFileModel); // перенёс в try
+                    using (var client = await Task.Factory.StartNew(()=> 
+                            new TcpClient(modelAddress, Convert.ToInt32(modelPort))))
+                    {
                         var stream = client.GetStream();
                         var writer = new StreamWriter(stream);
-                        writer.WriteLine("path");
-                        writer.WriteLine("giveMePath");
-                        writer.Flush();
+                        await writer.WriteLineAsync("path");
+                        await writer.WriteLineAsync("giveMePath");
+                        await writer.FlushAsync();
 
                         var reader = new StreamReader(stream);  // получили путь, если его не было
-                        serverPath = reader.ReadLine();
+                        serverPath = await reader.ReadLineAsync();
 
-                        currentServerPath = serverPath;                    
+                        currentServerPath = serverPath;
                     }
                 }
                 catch (Exception e)
@@ -99,9 +100,9 @@
         /// <summary>
         /// Получение дерева директорий
         /// </summary>
-        public ObservableCollection<string> ShowDirectoriesTree(bool isUpdateTree, string addDirectoryToServerPath)
+        public async Task<ObservableCollection<string>> ShowDirectoriesTree(bool isUpdateTree, string addDirectoryToServerPath)
         {
-            GetServerPath();            
+            await GetServerPath();            
             if (isUpdateTree)
             {                
                 if (addDirectoryToServerPath == "/")
@@ -114,21 +115,20 @@
                     currentServerPath += @"\" + addDirectoryToServerPath;
                 }                
             }
-
-            // Надо сделать корректный путь
-            //-------------------------------------
+            
             try
             {
-                using (var client = new TcpClient(modelAddress, Convert.ToInt32(modelPort)))
+                using (var client = await Task.Factory.StartNew(() =>
+                            new TcpClient(modelAddress, Convert.ToInt32(modelPort))))
                 {                                
                     var stream = client.GetStream();
                     var writer = new StreamWriter(stream);
-                    writer.WriteLine("Listing");
-                    writer.WriteLine(currentServerPath);
-                    writer.Flush();                    
+                    await writer.WriteLineAsync("Listing");
+                    await writer.WriteLineAsync(currentServerPath);
+                    await writer.FlushAsync();                    
 
                     var reader = new StreamReader(stream);
-                    var stringDirsAndFiles = reader.ReadLine(); 
+                    var stringDirsAndFiles = await reader.ReadLineAsync(); 
 
                     var splitDirsAndFiles = stringDirsAndFiles.Split(' ');
                     var dirsArray  = splitDirsAndFiles[0].Split('/');       
@@ -180,7 +180,7 @@
                     var writer = new StreamWriter(stream);
                     await writer.WriteLineAsync("Download");
                     await writer.WriteLineAsync(currentServerPath + @"\" + fileName); 
-                    writer.Flush();
+                    await writer.FlushAsync();
                     
                     viewModel.DownloadingFiles.Add(fileName);
 

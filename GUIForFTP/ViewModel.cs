@@ -59,33 +59,16 @@ namespace GUIForFTP
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(changedProperty));
         }
-
-        private string address;
-
+       
         /// <summary>
         /// Адрес сервера
         /// </summary>
-        public string Address
-        {   get => address;
-            set
-            {
-                address = value;               
-            }
-        }
-
-        private string port;
+        public string Address { get; set; }
 
         /// <summary>
         /// Порт сервера
         /// </summary>
-        public string Port
-        {
-            get => port;
-            set
-            {
-                port = value;                
-            }
-        }
+        public string Port { get; set; }
 
         private string pathToSaveFile;
 
@@ -105,12 +88,12 @@ namespace GUIForFTP
             }
         }
                     
-        public void Connect(string portFromThisViewModel, string addressFromThisViewModel)
+        public async void Connect(string portFromThisViewModel, string addressFromThisViewModel)
         {
             DirectoriesAndFiles.Clear();
             clientIsModel = new ClientIsModel(portFromThisViewModel, addressFromThisViewModel, this);
             
-            var tree = clientIsModel.ShowDirectoriesTree(false, "");
+            var tree = await clientIsModel.ShowDirectoriesTree(false, "");
 
             foreach (string dirThenFile in tree)
             {
@@ -118,9 +101,9 @@ namespace GUIForFTP
             }
         }
 
-        public void UpdateDirectoriesTree(string addDirectoryToServerPath)
+        public async void UpdateDirectoriesTree(string addDirectoryToServerPath)
         {
-            var tree = clientIsModel.ShowDirectoriesTree(true, addDirectoryToServerPath); // TODO!
+            var tree = await clientIsModel.ShowDirectoriesTree(true, addDirectoryToServerPath); // TODO!
 
             DirectoriesAndFiles.Clear();
             foreach (string dirThenFile in tree)

@@ -25,51 +25,37 @@
                     <ColumnDefinition Width="91*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="0.3*"/>
-                </Grid.RowDefinitions>
-                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Grid.ColumnSpan="2" Margin="0,0.2,0.4,0.2">
-                    <Label Content="Адрес сервера:"/>
-                    <TextBox MinWidth="350" 
-                        Text="{Binding Address, UpdateSourceTrigger=PropertyChanged, 
-                        Mode=OneWayToSource}"/>
-
-                    <Label Content="Порт сервера:"/>
-                    <TextBox MinWidth="100" 
-                        Text="{Binding Port, UpdateSourceTrigger=PropertyChanged, 
-                        Mode=OneWayToSource}"/>
-                </StackPanel>
-                <Button Grid.Row="1" Grid.Column="2" Content="Подключиться"
-                        Name="buttonConnect" PreviewMouseUp="buttonConnect_MouseUp" Margin="14.6,15.2,15,15.2"/>
-            </Grid>
-        </TabItem>
-        <TabItem Header="Файлы">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="72*"/>
-                    <ColumnDefinition Width="491*"/>
-                    <ColumnDefinition Width="225*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
                     <RowDefinition Height="0.3*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="0.4*"/>
                 </Grid.RowDefinitions>
-                <StackPanel Grid.Column="0" Orientation="Vertical" Grid.ColumnSpan="2" Margin="0,0,0.2,230.2" Grid.RowSpan="2">
+                <Button Grid.Row="0" Grid.Column="2" Content="Скачать все файлы"
+                    Name="buttonDownloadAll" PreviewMouseUp="buttonDownloadAll_PreviewMouseUp"/>
+                
+                <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Vertical" Grid.ColumnSpan="2" Margin="0,0,0.2,230.2" Grid.RowSpan="2">
                     <Label Content="Папка в файловой системе для скачивания файлов:"/>
                     <TextBox Width="550" TextWrapping="Wrap" Margin="2"
                         Text="{Binding PathToSaveFile, UpdateSourceTrigger=PropertyChanged, 
                         Mode=OneWayToSource}"/>
                 </StackPanel>
-
-                <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="2" Margin="2"
+                
+                <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="2"
                          x:Name="listBox" ItemsSource="{Binding Path=DirectoriesAndFiles, Mode=OneWay}"
                          MouseDoubleClick="listBox_MouseDoubleClick"/>
+                <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Vertical" Grid.ColumnSpan="2" Margin="0,0.2,0.4,0.2">
+                    <Label Content="Адрес сервера:"/>
+                    <TextBox MinWidth="350" 
+                        Text="{Binding Address, Mode=TwoWay}"/>
 
-                <Button Grid.Row="0" Grid.Column="2" Content="Скачать все файлы"
-                    Name="buttonDownloadAll" PreviewMouseUp="buttonDownloadAll_PreviewMouseUp"/>
+                    <Label Content="Порт сервера:"/>
+                    <TextBox MinWidth="100" 
+                        Text="{Binding Port, Mode=TwoWay}"/>
+                </StackPanel>
+                <Button Grid.Row="2" Grid.Column="2" Content="Подключиться"
+                        Name="buttonConnect" PreviewMouseUp="buttonConnect_MouseUp" Margin="14.6,15.2,15,15.2"/>
             </Grid>
         </TabItem>
+
         <TabItem Header="Загрузки">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -90,6 +76,7 @@
                          ItemsSource="{Binding Path=DownloadedFiles, Mode=OneWay}"/>
             </Grid>
         </TabItem>
+
         <TabItem Header="Справка">
             <StackPanel>
                 <TextBlock>Двойной клик ЛКМ по файлу - скачать файл.</TextBlock>
