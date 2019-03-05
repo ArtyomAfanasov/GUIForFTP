@@ -1,6 +1,7 @@
 ﻿namespace GUIForFTP
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.IO;
@@ -32,18 +33,22 @@
         /// <summary>
         /// Коллекция файлов и папок для передачи VM
         /// </summary>
-        public ObservableCollection<string> directoriesAndFiles = new ObservableCollection<string>();
+        private ObservableCollection<string> directoriesAndFiles = new ObservableCollection<string>();
+
+        /// <summary>
+        /// Коллекция флагов, определяющих директорию
+        /// </summary>
+        private List<bool> isDirectory = new List<bool>();
 
         /// <summary>
         /// Директория, на которую "смотрит" сервер
         /// </summary>
         private string serverPath = "";        
 
-        // todo
         /// <summary>
-        /// Получение дерева директорий
+        /// Получить путь, на который смотрит сервер
         /// </summary>
-        public ObservableCollection<string> OnConnectionShowDirectoriesTree()
+        private void GetServerPath()
         {
             if (serverPath == "")
             {
@@ -67,6 +72,15 @@
                     }
                 }
             }
+        }
+
+        // todo
+        /// <summary>
+        /// Получение дерева директорий
+        /// </summary>
+        public ObservableCollection<string> OnConnectionShowDirectoriesTree()
+        {
+            GetServerPath();
 
             using (var client = new TcpClient(modelAddress, Convert.ToInt32(modelPort)))
             {                
@@ -79,19 +93,21 @@
                     writer.Flush();                    
 
                     var reader = new StreamReader(stream);
-                    var stringDirsAndFiles = reader.ReadLine(); // добавляьб в obvser коллекцию элементы 
+                    var stringDirsAndFiles = reader.ReadLine(); 
 
                     var splitDirsAndFiles = stringDirsAndFiles.Split(' ');
-                    var dirsArray  = splitDirsAndFiles[0].Split('/');       // ??? Слеш
-                    var filesArray = splitDirsAndFiles[1].Split('/');      // ??? Слеш
+                    var dirsArray  = splitDirsAndFiles[0].Split('/');       
+                    var filesArray = splitDirsAndFiles[1].Split('/');     
 
                     foreach (string element in dirsArray)
                     {
                         directoriesAndFiles.Add(element);
+                        isDirectory.Add(true);
                     }
                     foreach (string element in filesArray)
                     {
                         directoriesAndFiles.Add(element);
+                        isDirectory.Add(false);
                     }                    
                 }
                 catch (Exception e)
@@ -100,7 +116,28 @@
                 }
             }
 
+            viewModel.isDirectory = isDirectory;
+
             return directoriesAndFiles;
-        }                                              
+        }
+        
+        public void DownloadFile()
+        {
+            using (var client = new TcpClient(modelAddress, Convert.ToInt32(modelPort)))
+            {
+                try
+                {
+                    var stream = client.GetStream();
+                    var writer = new StreamWriter(stream);
+                    writer.WriteLine("Download");
+                    writer.WriteLine(serverPath); // +  название файла ПРИПИЛИ
+                    writer.Flush();
+                }
+                catch
+                {
+
+                }
+            }
+        }
     }
 }

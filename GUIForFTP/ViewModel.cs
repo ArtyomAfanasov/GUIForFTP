@@ -31,6 +31,11 @@ namespace GUIForFTP
             = new ObservableCollection<string>();
 
         /// <summary>
+        /// Коллекция флагов, определяющих директорию
+        /// </summary>
+        public List<bool> isDirectory = new List<bool>();
+
+        /// <summary>
         /// Уведомляет систему об изменении свойств.
         /// А система обновляет привязанные элементы
         /// </summary>
@@ -82,7 +87,7 @@ namespace GUIForFTP
 
         public void UpdateDirectoriesTree()
         {
-
+            
         }
     }
 }

@@ -24,30 +24,7 @@
         /// <summary>
         /// Объект для мониторинга запросов
         /// </summary>
-        private TcpListener listener;    
-
-        /// <summary>
-        /// Ответ на запрос о размере файла и его содержимом
-        /// </summary>
-        /// <param name="path">Путь к файлу</param>
-        /// <returns>Размер файла и его содержимое</returns>
-        private string[] Get(string path)
-        {
-            if (!File.Exists(path))
-            {
-                return new string[1] { "size=-1" };
-            }
-
-            var file = new FileInfo(path);                                    
-                       
-            var content = Deserialize(File.ReadAllLines(path));
-
-            var answer = new string[2];
-            answer[0] = "size=" + file.Length.ToString();                        
-            answer[1] = content;
-                             
-            return answer; 
-        }        
+        private TcpListener listener;                 
         
         /// <summary>
         /// Перевод информации из массива строк в строку
@@ -99,8 +76,8 @@
                                 writer.WriteLine(answer);
                                 writer.Flush();
                                 break;
-                            case "2":
-                                answer = Deserialize(Get(path));
+                            case "Download":
+                                answer = Deserialize(DownloadFile(path));
                                 Console.WriteLine($"Буду отправлять: {answer}");
                                 writer.WriteLine(answer);
                                 writer.Flush();
@@ -169,6 +146,30 @@
                 answer[1] += file.Name + "/";                                // ??? Слеш
             }
             answer[1] = answer[1].TrimEnd('/');
+
+            return answer;
+        }
+
+        // todo
+        /// <summary>
+        /// Ответ на запрос о размере файла и его содержимом
+        /// </summary>
+        /// <param name="path">Путь к файлу</param>
+        /// <returns>Размер файла и его содержимое</returns>
+        private string[] DownloadFile(string path)
+        {
+            if (!File.Exists(path))
+            {
+                return new string[1] { "size=-1" };
+            }
+
+            var file = new FileInfo(path);
+
+            var content = Deserialize(File.ReadAllLines(path));
+
+            var answer = new string[2];
+            answer[0] = "size=" + file.Length.ToString();
+            answer[1] = content;
 
             return answer;
         }
