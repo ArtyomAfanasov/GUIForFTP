@@ -11,7 +11,7 @@
     using System.Windows;
     using System.Windows.Threading;
 
-    class ClientIsModel
+    class ClientModel
     {
         /// <summary>
         /// Порт сервера
@@ -25,7 +25,7 @@
 
         private readonly ViewModel viewModel;
 
-        public ClientIsModel(string portFromVM, string addressFromVM, ViewModel viewModel)
+        public ClientModel(string portFromVM, string addressFromVM, ViewModel viewModel)
         {
             modelPort = portFromVM;
             modelAddress = addressFromVM;
@@ -105,7 +105,7 @@
             await GetServerPath();            
             if (isUpdateTree)
             {                
-                if (addDirectoryToServerPath == "/")
+                if (addDirectoryToServerPath == "..")
                 {
                     currentServerPath = workingPath.Pop();                    
                 }
@@ -128,11 +128,13 @@
                     await writer.FlushAsync();                    
 
                     var reader = new StreamReader(stream);
-                    var stringDirsAndFiles = await reader.ReadLineAsync(); 
-
+                    var stringDirsAndFiles = await reader.ReadLineAsync();
+                    
                     var splitDirsAndFiles = stringDirsAndFiles.Split(' ');
-                    var dirsArray  = splitDirsAndFiles[0].Split('/');       
-                    var filesArray = splitDirsAndFiles[1].Split('/');
+                    var dirStringWithSpace = splitDirsAndFiles[0].Replace("?", " ");
+                    var dirsArray  = dirStringWithSpace.Split('/');
+                    var filesStringWithSpace = splitDirsAndFiles[1].Replace("?", " ");
+                    var filesArray = filesStringWithSpace.Split('/');
 
                     directoriesAndFiles.Clear();
                     isDirectory.Clear();

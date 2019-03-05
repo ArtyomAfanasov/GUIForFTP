@@ -20,7 +20,7 @@ namespace GUIForFTP
         /// <summary>
         /// Объект Model
         /// </summary>
-        private ClientIsModel clientIsModel;
+        private ClientModel clientModel;
 
         /// <summary>
         /// Коллекция директорий и папок для изменения View
@@ -66,9 +66,9 @@ namespace GUIForFTP
             set
             {
                 pathToSaveFile = value;
-                if (clientIsModel != null)
+                if (clientModel != null)
                 {
-                    clientIsModel.pathToSaveFileModel = pathToSaveFile;
+                    clientModel.pathToSaveFileModel = pathToSaveFile;
                 }                
             }
         }
@@ -76,9 +76,9 @@ namespace GUIForFTP
         public async void Connect(string portFromThisViewModel, string addressFromThisViewModel)
         {
             DirectoriesAndFiles.Clear();
-            clientIsModel = new ClientIsModel(portFromThisViewModel, addressFromThisViewModel, this);
+            clientModel = new ClientModel(portFromThisViewModel, addressFromThisViewModel, this);
             
-            var tree = await clientIsModel.ShowDirectoriesTree(false, "");
+            var tree = await clientModel.ShowDirectoriesTree(false, "");
 
             foreach (string dirThenFile in tree)
             {
@@ -88,7 +88,7 @@ namespace GUIForFTP
 
         public async void UpdateDirectoriesTree(string addDirectoryToServerPath)
         {
-            var tree = await clientIsModel.ShowDirectoriesTree(true, addDirectoryToServerPath); // TODO!
+            var tree = await clientModel.ShowDirectoriesTree(true, addDirectoryToServerPath); // TODO!
 
             DirectoriesAndFiles.Clear();
             foreach (string dirThenFile in tree)
@@ -101,7 +101,7 @@ namespace GUIForFTP
         {
             try
             {
-                await clientIsModel.DownloadFile(fileName);
+                await clientModel.DownloadFile(fileName);
             }
             catch
             {
@@ -111,7 +111,7 @@ namespace GUIForFTP
 
         public async Task DownloadAllFiles()
         {
-            await clientIsModel.DownloadAllFiles();
+            await clientModel.DownloadAllFiles();
         }
     }
 }

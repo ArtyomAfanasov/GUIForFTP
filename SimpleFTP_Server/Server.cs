@@ -138,7 +138,8 @@
             {
                 foreach (DirectoryInfo directory in directoryInfo.GetDirectories())
                 {
-                    answer[0] += directory.Name + "/";                           // ??? Слеш
+                    var directoryName = directory.Name.Replace(" ", "?");
+                    answer[0] += directoryName + "/";                           // ??? Слеш
                 }
                 answer[0] = answer[0].TrimEnd('/');
             }
@@ -151,7 +152,8 @@
             {
                 foreach (FileInfo file in directoryInfo.GetFiles())
                 {
-                    answer[1] += file.Name + "/";                                // ??? Слеш
+                    var fileName = file.Name.Replace(" ", "?");
+                    answer[1] += fileName + "/";                                // ??? Слеш
                 }
                 answer[1] = answer[1].TrimEnd('/');
             }
