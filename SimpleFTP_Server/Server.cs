@@ -139,7 +139,7 @@
                 foreach (DirectoryInfo directory in directoryInfo.GetDirectories())
                 {
                     var directoryName = directory.Name.Replace(" ", "?");
-                    answer[0] += directoryName + "/";                           // ??? Слеш
+                    answer[0] += directoryName + "/";                           
                 }
                 answer[0] = answer[0].TrimEnd('/');
             }
@@ -153,7 +153,7 @@
                 foreach (FileInfo file in directoryInfo.GetFiles())
                 {
                     var fileName = file.Name.Replace(" ", "?");
-                    answer[1] += fileName + "/";                                // ??? Слеш
+                    answer[1] += fileName + "/";                               
                 }
                 answer[1] = answer[1].TrimEnd('/');
             }
@@ -174,14 +174,21 @@
         /// <returns>Размер файла и его содержимое</returns>
         private string DownloadFile(string path)
         {
-            if (!File.Exists(path))
+            try
             {
-                return "size=-1";
+                if (!File.Exists(path))
+                {
+                    return "size=-1";
+                }
+
+                var answer = File.ReadAllText(path);
+
+                return answer;
             }
-
-            var file = new FileInfo(path);                     
-
-            return File.ReadAllText(path);            
+            catch (Exception e )
+            {
+                return "Ошибка при скачивании файла: " + e.Message;
+            }            
         }
     }
 }

@@ -59,7 +59,14 @@
 
         private async void buttonDownloadAll_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
-            await viewModel.DownloadAllFiles();
+            try
+            {
+                await viewModel.DownloadAllFiles();
+            }
+            catch (NullReferenceException)
+            {
+                MessageBox.Show("Для начала подключитесь к серверу");
+            }
         }
     }
 }

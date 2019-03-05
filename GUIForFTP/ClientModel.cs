@@ -218,22 +218,22 @@
                 {
                     MessageBox.Show("Подключитесь к серверу.");
                     return;
+                }                
+            
+                directoryInfo = new DirectoryInfo(currentServerPath);
+
+                if (directoryInfo.GetFiles().Length > 0)
+                {                
+                    foreach (FileInfo file in directoryInfo.GetFiles())
+                    {
+                        new Task(async () => await DownloadFile(file.Name)).
+                                Start(TaskScheduler.FromCurrentSynchronizationContext());                                                                                            
+                    }
                 }
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
-            }
-
-            directoryInfo = new DirectoryInfo(currentServerPath);
-
-            if (directoryInfo.GetFiles().Length > 0)
-            {
-                
-                foreach (FileInfo file in directoryInfo.GetFiles())
-                {
-                    await DownloadFile(file.Name);                          
-                }
             }
         }
     }

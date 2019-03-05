@@ -105,7 +105,7 @@ namespace GUIForFTP
             }
             catch
             {
-                MessageBox.Show("Что-то пошло не так");
+                MessageBox.Show("Что-то пошло не так");                
             }            
         }
 
