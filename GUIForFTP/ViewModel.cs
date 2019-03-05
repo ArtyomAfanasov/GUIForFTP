@@ -28,7 +28,7 @@ namespace GUIForFTP
         /// Коллекция директорий и папок для изменения View
         /// </summary>                      
         public ObservableCollection<string> DirectoriesAndFiles { get; set; } 
-            = new ObservableCollection<string>() { "/" };
+            = new ObservableCollection<string>();
 
         /// <summary>
         /// Уведомляет систему об изменении свойств.
@@ -74,9 +74,9 @@ namespace GUIForFTP
             
             var tree = clientIsModel.OnConnectionShowDirectoriesTree();
 
-            foreach (string dirOrFile in tree)
+            foreach (string dirThenFile in tree)
             {
-                DirectoriesAndFiles.Add(dirOrFile);
+                DirectoriesAndFiles.Add(dirThenFile);
             }
         }
 
@@ -84,6 +84,5 @@ namespace GUIForFTP
         {
 
         }
-
     }
 }

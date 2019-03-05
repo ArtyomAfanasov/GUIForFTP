@@ -139,8 +139,7 @@
         /// <returns>
         /// Двухэлементный массив, где        
         /// на первом месте - папки
-        /// на втором месте - файлы
-        /// 
+        /// на втором месте - файлы.       
         /// Если директория не найдена, то вернётся одноэлементый массив с элементом "size=-1"
         /// </returns>
         private string[] GetArrayOfFilesAndDirectoies(string path)
@@ -162,12 +161,14 @@
             foreach (DirectoryInfo directory in directoryInfo.GetDirectories())
             {
                 answer[0] += directory.Name + "/";                           // ??? Слеш
-            }            
+            }
+            answer[0] = answer[0].TrimEnd('/');
 
             foreach (FileInfo file in directoryInfo.GetFiles())
             {
                 answer[1] += file.Name + "/";                                // ??? Слеш
             }
+            answer[1] = answer[1].TrimEnd('/');
 
             return answer;
         }
