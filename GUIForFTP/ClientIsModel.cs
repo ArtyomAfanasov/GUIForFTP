@@ -9,6 +9,7 @@
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using System.Windows;
+    using System.Windows.Threading;
 
     class ClientIsModel
     {
@@ -34,12 +35,7 @@
         /// <summary>
         /// Коллекция файлов и папок для передачи VM
         /// </summary>
-        private ObservableCollection<string> directoriesAndFiles = new ObservableCollection<string>();
-
-        /// <summary>
-        /// Коллекция скачиваемых файлов для передачи VM
-        /// </summary>
-        //private ObservableCollection<string> downloadingFile = new ObservableCollection<string>();
+        private ObservableCollection<string> directoriesAndFiles = new ObservableCollection<string>();        
 
         /// <summary>
         /// Стек для возврата на уровни выше
@@ -50,6 +46,8 @@
         /// Коллекция флагов, определяющих директорию
         /// </summary>
         private List<bool> isDirectory = new List<bool>();
+
+        public Dispatcher dispatcher { get; }
 
         /// <summary>
         /// Директория, на которую "смотрит" сервер
@@ -97,25 +95,18 @@
                 }
             }
         }
-
-        // Мб это можно использовать и как обновление дерева
-        // GetDirectoriesAndFiles ------ мб назвать так
-        // todo
+        
         /// <summary>
         /// Получение дерева директорий
         /// </summary>
-        public ObservableCollection<string> OnConnectionShowDirectoriesTree(bool isUpdateTree, string addDirectoryToServerPath)
+        public ObservableCollection<string> ShowDirectoriesTree(bool isUpdateTree, string addDirectoryToServerPath)
         {
             GetServerPath();            
             if (isUpdateTree)
             {                
                 if (addDirectoryToServerPath == "/")
                 {
-                    currentServerPath = workingPath.Pop();
-                    //if (workingPath.Count == 1)
-                    //{
-                    // ??? чтобы не уйти глубже. ЛИБО ПРОСТО НЕ ДОБАЛВЯТЬ "/" у корня
-                    //}
+                    currentServerPath = workingPath.Pop();                    
                 }
                 else
                 {                    
@@ -187,18 +178,19 @@
                 {                
                     var stream = client.GetStream();
                     var writer = new StreamWriter(stream);
-                    writer.WriteLine("Download");
-                    writer.WriteLine(currentServerPath + @"\" + fileName); 
+                    await writer.WriteLineAsync("Download");
+                    await writer.WriteLineAsync(currentServerPath + @"\" + fileName); 
                     writer.Flush();
                     
                     viewModel.DownloadingFiles.Add(fileName);
 
                     var reader = new StreamReader(stream);
-                    var content = reader.ReadToEnd();
+                    var content = await reader.ReadToEndAsync();
 
-                    var textFile = new StreamWriter(pathToSaveFileModel + @"\" + fileName);
-                    textFile.WriteLine(content);                    
-                    textFile.Close();            
+                    using (var textFile = new StreamWriter(pathToSaveFileModel + @"\" + fileName))
+                    {
+                        textFile.WriteLine(content);                        
+                    }
                     
                     viewModel.DownloadingFiles.Add(fileName + " скачался!");
                     viewModel.DownloadedFiles.Add(fileName);
@@ -235,10 +227,11 @@
 
             if (directoryInfo.GetFiles().Length > 0)
             {
+                
                 foreach (FileInfo file in directoryInfo.GetFiles())
                 {
-                    await DownloadFile(file.Name);                              // ??? Слеш
-                }                
+                    await DownloadFile(file.Name);                          
+                }
             }
         }
     }

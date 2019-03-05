@@ -5,7 +5,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace GUIForFTP
 {
@@ -107,7 +110,7 @@ namespace GUIForFTP
             DirectoriesAndFiles.Clear();
             clientIsModel = new ClientIsModel(portFromThisViewModel, addressFromThisViewModel, this);
             
-            var tree = clientIsModel.OnConnectionShowDirectoriesTree(false, "");
+            var tree = clientIsModel.ShowDirectoriesTree(false, "");
 
             foreach (string dirThenFile in tree)
             {
@@ -117,7 +120,7 @@ namespace GUIForFTP
 
         public void UpdateDirectoriesTree(string addDirectoryToServerPath)
         {
-            var tree = clientIsModel.OnConnectionShowDirectoriesTree(true, addDirectoryToServerPath); // TODO!
+            var tree = clientIsModel.ShowDirectoriesTree(true, addDirectoryToServerPath); // TODO!
 
             DirectoriesAndFiles.Clear();
             foreach (string dirThenFile in tree)
@@ -128,7 +131,14 @@ namespace GUIForFTP
 
         public async void DownloadFile(string fileName)
         {
-            await clientIsModel.DownloadFile(fileName);
+            try
+            {
+                await clientIsModel.DownloadFile(fileName);
+            }
+            catch
+            {
+                MessageBox.Show("Что-то пошло не так");
+            }            
         }
 
         public async void DownloadAllFiles()
