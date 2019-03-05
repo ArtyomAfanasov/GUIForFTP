@@ -198,8 +198,7 @@
         /// </summary>
         /// <param name="path">Путь к директории</param>
         /// <returns>
-        /// Трёхэлементный массив, где 
-        /// на нулевом месте - кол-во файлов и папок в директории
+        /// Двухэлементный массив, где        
         /// на первом месте - папки
         /// на втором месте - файлы
         /// 
@@ -219,18 +218,16 @@
             }
 
             var countFileAndDirectorys = directoryInfo.GetFileSystemInfos().Length;
-            var answer = new string[3];
-
-            answer[0] = countFileAndDirectorys.ToString();
+            var answer = new string[2];            
 
             foreach (DirectoryInfo directory in directoryInfo.GetDirectories())
             {
-                answer[1] += directory.Name + " ";
+                answer[0] += directory.Name + " ";
             }
 
             foreach (FileInfo file in directoryInfo.GetFiles())
             {
-                answer[2] += file.Name + " ";
+                answer[1] += file.Name + " ";
             }
 
             return answer;
