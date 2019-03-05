@@ -37,7 +37,12 @@
 
         private void buttonConnect_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            viewModel.Connect(viewModel.Port, viewModel.Address);            
+            viewModel.Connect(viewModel.Port, viewModel.Address);  // todo          
+        }
+
+        private void listBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            viewModel.UpdateDirectoriesTree(); // todo
         }
     }
 }

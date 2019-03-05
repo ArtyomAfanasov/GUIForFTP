@@ -93,7 +93,7 @@
 
                         switch (request)
                         {
-                            case "1":
+                            case "Listing":
                                 answer = Deserialize(GetArrayOfFilesAndDirectoies(path));
                                 Console.WriteLine($"Буду отправлять: {answer}");
                                 writer.WriteLine(answer);
@@ -101,6 +101,13 @@
                                 break;
                             case "2":
                                 answer = Deserialize(Get(path));
+                                Console.WriteLine($"Буду отправлять: {answer}");
+                                writer.WriteLine(answer);
+                                writer.Flush();
+                                break;
+                            case "path":
+                                answer = new DirectoryInfo(Directory.GetCurrentDirectory()).
+                                    Parent.Parent.FullName;
                                 Console.WriteLine($"Буду отправлять: {answer}");
                                 writer.WriteLine(answer);
                                 writer.Flush();
@@ -154,12 +161,12 @@
 
             foreach (DirectoryInfo directory in directoryInfo.GetDirectories())
             {
-                answer[0] += directory.Name + "/";
+                answer[0] += directory.Name + "/";                           // ??? Слеш
             }            
 
             foreach (FileInfo file in directoryInfo.GetFiles())
             {
-                answer[1] += file.Name + "/";
+                answer[1] += file.Name + "/";                                // ??? Слеш
             }
 
             return answer;
