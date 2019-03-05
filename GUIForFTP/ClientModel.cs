@@ -63,7 +63,7 @@
         /// Путь для сохранения файлов (объект из класса модели)
         /// </summary>
         public string pathToSaveFileModel = new DirectoryInfo(Directory.GetCurrentDirectory()).
-                                    Parent.Parent.Parent.Parent.FullName + @"\Donwload";
+                                    Parent.Parent.Parent.Parent.FullName + @"\GUIForFTPDonwload";
 
         /// <summary>
         /// Получить путь, на который смотрит сервер
