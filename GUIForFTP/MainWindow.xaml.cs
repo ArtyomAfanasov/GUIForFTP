@@ -43,10 +43,17 @@
 
         private void listBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if ( viewModel.isDirectory[((ListBox)sender).SelectedIndex] )    // если это директория
+            if (((ListBox)sender).SelectedItem.ToString() == "/")
             {
+                viewModel.UpdateDirectoriesTree("/");
+                return;
+            }
+
+            if ( viewModel.isDirectory[((ListBox)sender).SelectedIndex] )    // если это директория
+            {                
                 viewModel.UpdateDirectoriesTree(((ListBox)sender).SelectedItem.ToString()); // todooooooo
             }
+            
 
             //if (listBox.SelectedItem.ToString() == "/")
             //{

@@ -33,17 +33,32 @@
         /// <summary>
         /// Коллекция файлов и папок для передачи VM
         /// </summary>
-        private ObservableCollection<string> directoriesAndFiles;
+        private ObservableCollection<string> directoriesAndFiles = new ObservableCollection<string>();
+
+        /// <summary>
+        /// Стек для возврата на уровни выше
+        /// </summary>
+        private Stack<string> workingPath = new Stack<string>();
 
         /// <summary>
         /// Коллекция флагов, определяющих директорию
         /// </summary>
-        private List<bool> isDirectory;
+        private List<bool> isDirectory = new List<bool>();
 
         /// <summary>
         /// Директория, на которую "смотрит" сервер
         /// </summary>
-        private string serverPath = "";        
+        private string serverPath = "";
+
+        /// <summary>
+        /// Путь на данном шаге
+        /// </summary>
+        private string currentServerPath = "";
+
+        /// <summary>
+        /// Путь на предыдущем шаге
+        /// </summary>
+        private string previousServerPath = "";
 
         /// <summary>
         /// Получить путь, на который смотрит сервер
@@ -65,6 +80,7 @@
                         var reader = new StreamReader(stream);  // получили путь, если его не было
                         serverPath = reader.ReadLine();
 
+                        currentServerPath = serverPath;
                     }
                     catch (Exception e)
                     {
@@ -75,18 +91,33 @@
         }
 
         // Мб это можно использовать и как обновление дерева
+        // GetDirectoriesAndFiles ------ мб назвать так
         // todo
         /// <summary>
         /// Получение дерева директорий
         /// </summary>
         public ObservableCollection<string> OnConnectionShowDirectoriesTree(bool isUpdateTree, string addDirectoryToServerPath)
         {
-            GetServerPath();
-
+            GetServerPath();            
             if (isUpdateTree)
-            {
-                serverPath += @"\" + addDirectoryToServerPath;
+            {                
+                if (addDirectoryToServerPath == "/")
+                {
+                    currentServerPath = workingPath.Pop();
+                    //if (workingPath.Count == 1)
+                    //{
+                    // ??? чтобы не уйти глубже. ЛИБО ПРОСТО НЕ ДОБАЛВЯТЬ "/" у корня
+                    //}
+                }
+                else
+                {                    
+                    workingPath.Push(currentServerPath);                    
+                    currentServerPath += @"\" + addDirectoryToServerPath;
+                }                
             }
+
+            // Надо сделать корректный путь
+            //-------------------------------------
 
             using (var client = new TcpClient(modelAddress, Convert.ToInt32(modelPort)))
             {                
@@ -95,7 +126,7 @@
                     var stream = client.GetStream();
                     var writer = new StreamWriter(stream);
                     writer.WriteLine("Listing");
-                    writer.WriteLine(serverPath);
+                    writer.WriteLine(currentServerPath);
                     writer.Flush();                    
 
                     var reader = new StreamReader(stream);
@@ -105,8 +136,14 @@
                     var dirsArray  = splitDirsAndFiles[0].Split('/');       
                     var filesArray = splitDirsAndFiles[1].Split('/');
 
-                    directoriesAndFiles = new ObservableCollection<string>();
-                    isDirectory = new List<bool>(); 
+                    directoriesAndFiles.Clear();
+                    isDirectory.Clear();
+
+                    if (currentServerPath != serverPath)
+                    {
+                        directoriesAndFiles.Add("/");
+                        isDirectory.Add(false);
+                    }
                     foreach (string element in dirsArray)
                     {
                         if (element != "")
