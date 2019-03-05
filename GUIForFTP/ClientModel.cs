@@ -43,9 +43,7 @@
         /// <summary>
         /// Коллекция флагов, определяющих директорию
         /// </summary>
-        private List<bool> isDirectory = new List<bool>();
-
-        public Dispatcher dispatcher { get; }
+        private List<bool> isDirectory = new List<bool>();        
 
         /// <summary>
         /// Директория, на которую "смотрит" сервер
