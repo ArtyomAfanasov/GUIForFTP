@@ -54,5 +54,10 @@
                 viewModel.DownloadFile(((ListBox)sender).SelectedItem.ToString());
             }                                      
         }
+
+        private void buttonDownloadAll_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            viewModel.DownloadAllFiles();
+        }
     }
 }

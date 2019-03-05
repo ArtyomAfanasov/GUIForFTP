@@ -66,7 +66,8 @@
                          x:Name="listBox" ItemsSource="{Binding Path=DirectoriesAndFiles, Mode=OneWay}"
                          MouseDoubleClick="listBox_MouseDoubleClick"/>
 
-                <Button Grid.Row="0" Grid.Column="2" Content="Скачать все файлы"/>
+                <Button Grid.Row="0" Grid.Column="2" Content="Скачать все файлы"
+                    Name="buttonDownloadAll" PreviewMouseUp="buttonDownloadAll_PreviewMouseUp"/>
             </Grid>
         </TabItem>
         <TabItem Header="Загрузки">

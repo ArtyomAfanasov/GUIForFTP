@@ -130,5 +130,10 @@ namespace GUIForFTP
         {
             await clientIsModel.DownloadFile(fileName);
         }
+
+        public async void DownloadAllFiles()
+        {
+            await clientIsModel.DownloadAllFiles();
+        }
     }
 }

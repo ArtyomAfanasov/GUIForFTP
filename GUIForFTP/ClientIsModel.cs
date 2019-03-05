@@ -190,8 +190,7 @@
                     writer.WriteLine("Download");
                     writer.WriteLine(currentServerPath + @"\" + fileName); 
                     writer.Flush();
-
-                    //downloadingFile.Add(currentServerPath + @"\" + fileName);
+                    
                     viewModel.DownloadingFiles.Add(fileName);
 
                     var reader = new StreamReader(stream);
@@ -201,13 +200,45 @@
                     textFile.WriteLine(content);                    
                     textFile.Close();            
                     
-                    viewModel.DownloadingFiles.Remove(fileName);
+                    viewModel.DownloadingFiles.Add(fileName + " скачался!");
                     viewModel.DownloadedFiles.Add(fileName);
                 }
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
+            }
+        }
+
+        public async Task DownloadAllFiles()
+        {
+            DirectoryInfo directoryInfo;
+
+            try
+            {
+                if (currentServerPath != "")
+                {
+                    directoryInfo = new DirectoryInfo(currentServerPath);
+                }
+                else
+                {
+                    MessageBox.Show("Подключитесь к серверу.");
+                    return;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+
+            directoryInfo = new DirectoryInfo(currentServerPath);
+
+            if (directoryInfo.GetFiles().Length > 0)
+            {
+                foreach (FileInfo file in directoryInfo.GetFiles())
+                {
+                    await DownloadFile(file.Name);                              // ??? Слеш
+                }                
             }
         }
     }
