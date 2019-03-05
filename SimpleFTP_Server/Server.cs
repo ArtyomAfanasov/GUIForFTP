@@ -77,7 +77,7 @@
                                 writer.Flush();
                                 break;
                             case "Download":
-                                answer = Deserialize(DownloadFile(path));
+                                answer = DownloadFile(path);
                                 Console.WriteLine($"Буду отправлять: {answer}");
                                 writer.WriteLine(answer);
                                 writer.Flush();
@@ -172,22 +172,16 @@
         /// </summary>
         /// <param name="path">Путь к файлу</param>
         /// <returns>Размер файла и его содержимое</returns>
-        private string[] DownloadFile(string path)
+        private string DownloadFile(string path)
         {
             if (!File.Exists(path))
             {
-                return new string[1] { "size=-1" };
+                return "size=-1";
             }
 
-            var file = new FileInfo(path);
+            var file = new FileInfo(path);                     
 
-            var content = Deserialize(File.ReadAllLines(path));
-
-            var answer = new string[2];
-            answer[0] = "size=" + file.Length.ToString();
-            answer[1] = content;
-
-            return answer;
+            return File.ReadAllText(path);            
         }
     }
 }
