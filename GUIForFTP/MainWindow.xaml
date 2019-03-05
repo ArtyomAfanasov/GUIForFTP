@@ -82,23 +82,11 @@
                 <Label Grid.Row="0" Grid.Column="0" Content="Скачиваются"/>
                 <Label Grid.Row="0" Grid.Column="1" Content="Скачались"/>
 
-                <ListBox Grid.Row="1" Grid.Column="0" Margin="2" 
-                         >
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                <ListBox Grid.Row="1" Grid.Column="0" Margin="2"
+                         ItemsSource="{Binding Path=DownloadingFiles, Mode=OneWay}"/>
 
                 <ListBox Grid.Row="1" Grid.Column="1" Margin="2" 
-                         >
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                         ItemsSource="{Binding Path=DownloadedFiles, Mode=OneWay}"/>
             </Grid>
         </TabItem>
         <TabItem Header="Справка">

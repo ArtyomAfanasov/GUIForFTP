@@ -37,6 +37,11 @@
         private ObservableCollection<string> directoriesAndFiles = new ObservableCollection<string>();
 
         /// <summary>
+        /// Коллекция скачиваемых файлов для передачи VM
+        /// </summary>
+        //private ObservableCollection<string> downloadingFile = new ObservableCollection<string>();
+
+        /// <summary>
         /// Стек для возврата на уровни выше
         /// </summary>
         private Stack<string> workingPath = new Stack<string>();
@@ -172,7 +177,7 @@
             return directoriesAndFiles;
         }
         
-        public void DownloadFile(string fileName)
+        public async Task DownloadFile(string fileName)
         {
             try
             {
@@ -184,12 +189,18 @@
                     writer.WriteLine(currentServerPath + @"\" + fileName); 
                     writer.Flush();
 
-                    var reader = new StreamReader(stream);
-                    var content = reader.ReadToEnd();
+                    //downloadingFile.Add(currentServerPath + @"\" + fileName);
+                    viewModel.DownloadingFiles.Add(fileName);
 
-                    var textFile = new StreamWriter(pathToSaveFileModel + @"\" + fileName);
+                    var reader = new StreamReader(stream);
+                    var content = await reader.ReadToEndAsync();
+
+                    var textFile = new StreamWriter(fileName);
                     textFile.WriteLine(content);                    
-                    textFile.Close();                    
+                    textFile.Close();            
+                    
+                    viewModel.DownloadingFiles.Remove(fileName);
+                    viewModel.DownloadedFiles.Add(fileName);
                 }
             }
             catch (Exception e)

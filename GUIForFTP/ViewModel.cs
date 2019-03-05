@@ -31,6 +31,18 @@ namespace GUIForFTP
             = new ObservableCollection<string>();
 
         /// <summary>
+        /// Коллекция скачиваемых файлов
+        /// </summary>
+        public ObservableCollection<string> DownloadingFiles { get; set; }
+            = new ObservableCollection<string>();
+
+        /// <summary>
+        /// Скачанные файлы
+        /// </summary>
+        public ObservableCollection<string> DownloadedFiles { get; set; }
+            = new ObservableCollection<string>();
+
+        /// <summary>
         /// Коллекция флагов, определяющих директорию
         /// </summary>
         public List<bool> isDirectory = new List<bool>();
@@ -92,6 +104,7 @@ namespace GUIForFTP
                     
         public void Connect(string portFromThisViewModel, string addressFromThisViewModel)
         {
+            DirectoriesAndFiles.Clear();
             clientIsModel = new ClientIsModel(portFromThisViewModel, addressFromThisViewModel, this);
             
             var tree = clientIsModel.OnConnectionShowDirectoriesTree(false, "");
@@ -113,9 +126,9 @@ namespace GUIForFTP
             }            
         }
 
-        public void DownloadFile(string fileName)
+        public async void DownloadFile(string fileName)
         {
-            clientIsModel.DownloadFile(fileName);
+            await clientIsModel.DownloadFile(fileName);
         }
     }
 }
