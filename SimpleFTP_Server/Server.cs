@@ -47,77 +47,7 @@
             answer[1] = content;
                              
             return answer; 
-        }
-
-        /// <summary>
-        /// Ответ на запрос о:
-        /// количестве файлов и папок в директории
-        /// названии файла или папки 
-        /// существование директории (если не существует, то вернёт size=-1)
-        /// </summary>
-        /// <param name="path">Путь директории или файла</param>
-        /// <returns>
-        /// Массив информации о:
-        /// количестве файлов и папок в директории
-        /// названии файла или папки 
-        /// существование директории (если не существует, то вернёт size=-1)
-        /// </returns>
-        private string[] List(string path)
-        {
-            try
-            {               
-                if (Directory.Exists(path))
-                {
-                    var answer = new string[3];
-                    var isDir = "isDir?-false";
-                    var info = new DirectoryInfo(path);
-                    FileSystemInfo[] filesAndDirectories;
-                    int countFileAndDirectorys;
-
-                    filesAndDirectories = info.GetFileSystemInfos();
-                    countFileAndDirectorys = filesAndDirectories.Length;
-                    
-                    answer[0] = "size=" + countFileAndDirectorys.ToString();                    
-                    answer[1] = "Папка-" + info.Name;
-
-                    isDir = "isDir?-true";
-
-                    answer[2] = isDir;
-
-                    return answer;
-                }
-                else
-                {
-                    if (File.Exists(path))
-                    {
-                        var answer = new string[3];
-                        var isDir = "isDir?-false";
-                        var info = new DirectoryInfo(path);
-                        FileSystemInfo[] filesAndDirectories;
-                        int countFileAndDirectorys;
-
-                        var infoFile = new FileInfo(path);
-                        filesAndDirectories = info.Parent.GetFileSystemInfos();
-                        countFileAndDirectorys = filesAndDirectories.Length;
-
-                        answer[0] = "size=" + countFileAndDirectorys.ToString();
-                        answer[1] = "Файл-" + infoFile.Name;
-
-                        answer[2] = isDir;
-
-                        return answer;
-                    }
-                    else
-                    {
-                        throw new DirectoryNotFoundException();
-                    }                   
-                }                                                                           
-            }
-            catch (DirectoryNotFoundException e)
-            {
-                return new string[1] { "size=-1" };
-            }            
-        }      
+        }        
         
         /// <summary>
         /// Перевод информации из массива строк в строку
@@ -164,7 +94,7 @@
                         switch (request)
                         {
                             case "1":
-                                answer = Deserialize(List(path));
+                                answer = Deserialize(GetArrayOfFilesAndDirectoies(path));
                                 Console.WriteLine($"Буду отправлять: {answer}");
                                 writer.WriteLine(answer);
                                 writer.Flush();
@@ -192,6 +122,8 @@
             }            
         }
 
+        // Будет разделяться "/". А при десериализации появится пробел в строке. 
+        // По нему можно будет разделить папки и файлы
         // todo Массив из трёх элементов. Во 2ом - папки в 3ем - файлы
         /// <summary>
         /// Получить массив файлов и папок
@@ -222,12 +154,12 @@
 
             foreach (DirectoryInfo directory in directoryInfo.GetDirectories())
             {
-                answer[0] += directory.Name + " ";
-            }
+                answer[0] += directory.Name + "/";
+            }            
 
             foreach (FileInfo file in directoryInfo.GetFiles())
             {
-                answer[1] += file.Name + " ";
+                answer[1] += file.Name + "/";
             }
 
             return answer;
