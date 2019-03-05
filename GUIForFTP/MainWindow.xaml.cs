@@ -45,15 +45,15 @@
         {
             if ( viewModel.isDirectory[((ListBox)sender).SelectedIndex] )    // если это директория
             {
-                viewModel.UpdateDirectoriesTree(); // todooooooo
+                viewModel.UpdateDirectoriesTree(((ListBox)sender).SelectedItem.ToString()); // todooooooo
             }
 
-            if (listBox.SelectedItem.ToString() == "/")
-            {
+            //if (listBox.SelectedItem.ToString() == "/")
+            //{
                 // после viewModel.UpdateDirectoriesTree();
-            }
+            //}
 
-            var fileName = listBox.SelectedItem.ToString();                
+            //var fileName = listBox.SelectedItem.ToString();                
         }
     }
 }

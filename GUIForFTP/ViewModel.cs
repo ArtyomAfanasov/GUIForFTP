@@ -77,7 +77,7 @@ namespace GUIForFTP
         {
             clientIsModel = new ClientIsModel(portFromThisViewModel, addressFromThisViewModel, this);
             
-            var tree = clientIsModel.OnConnectionShowDirectoriesTree();
+            var tree = clientIsModel.OnConnectionShowDirectoriesTree(false, "");
 
             foreach (string dirThenFile in tree)
             {
@@ -85,9 +85,15 @@ namespace GUIForFTP
             }
         }
 
-        public void UpdateDirectoriesTree()
+        public void UpdateDirectoriesTree(string addDirectoryToServerPath)
         {
-            
+            var tree = clientIsModel.OnConnectionShowDirectoriesTree(true, addDirectoryToServerPath); // TODO!
+
+            DirectoriesAndFiles.Clear();
+            foreach (string dirThenFile in tree)
+            {
+                DirectoriesAndFiles.Add(dirThenFile);
+            }            
         }
     }
 }

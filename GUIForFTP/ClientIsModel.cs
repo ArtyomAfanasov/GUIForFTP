@@ -33,12 +33,12 @@
         /// <summary>
         /// Коллекция файлов и папок для передачи VM
         /// </summary>
-        private ObservableCollection<string> directoriesAndFiles = new ObservableCollection<string>();
+        private ObservableCollection<string> directoriesAndFiles;
 
         /// <summary>
         /// Коллекция флагов, определяющих директорию
         /// </summary>
-        private List<bool> isDirectory = new List<bool>();
+        private List<bool> isDirectory;
 
         /// <summary>
         /// Директория, на которую "смотрит" сервер
@@ -74,13 +74,19 @@
             }
         }
 
+        // Мб это можно использовать и как обновление дерева
         // todo
         /// <summary>
         /// Получение дерева директорий
         /// </summary>
-        public ObservableCollection<string> OnConnectionShowDirectoriesTree()
+        public ObservableCollection<string> OnConnectionShowDirectoriesTree(bool isUpdateTree, string addDirectoryToServerPath)
         {
             GetServerPath();
+
+            if (isUpdateTree)
+            {
+                serverPath += @"\" + addDirectoryToServerPath;
+            }
 
             using (var client = new TcpClient(modelAddress, Convert.ToInt32(modelPort)))
             {                
@@ -97,17 +103,25 @@
 
                     var splitDirsAndFiles = stringDirsAndFiles.Split(' ');
                     var dirsArray  = splitDirsAndFiles[0].Split('/');       
-                    var filesArray = splitDirsAndFiles[1].Split('/');     
+                    var filesArray = splitDirsAndFiles[1].Split('/');
 
+                    directoriesAndFiles = new ObservableCollection<string>();
+                    isDirectory = new List<bool>(); 
                     foreach (string element in dirsArray)
                     {
-                        directoriesAndFiles.Add(element);
-                        isDirectory.Add(true);
+                        if (element != "")
+                        {
+                            directoriesAndFiles.Add(element);
+                            isDirectory.Add(true);
+                        }
                     }
                     foreach (string element in filesArray)
                     {
-                        directoriesAndFiles.Add(element);
-                        isDirectory.Add(false);
+                        if (element != "")
+                        {
+                            directoriesAndFiles.Add(element);
+                            isDirectory.Add(false);
+                        }
                     }                    
                 }
                 catch (Exception e)

@@ -131,21 +131,35 @@
             {
                 return new string[] { "size=-1" };
             }
+            
+            var answer = new string[2];
 
-            var countFileAndDirectorys = directoryInfo.GetFileSystemInfos().Length;
-            var answer = new string[2];            
-
-            foreach (DirectoryInfo directory in directoryInfo.GetDirectories())
+            if (directoryInfo.GetDirectories().Length > 0)
             {
-                answer[0] += directory.Name + "/";                           // ??? Слеш
+                foreach (DirectoryInfo directory in directoryInfo.GetDirectories())
+                {
+                    answer[0] += directory.Name + "/";                           // ??? Слеш
+                }
+                answer[0] = answer[0].TrimEnd('/');
             }
-            answer[0] = answer[0].TrimEnd('/');
-
-            foreach (FileInfo file in directoryInfo.GetFiles())
+            else
             {
-                answer[1] += file.Name + "/";                                // ??? Слеш
+                answer[0] = "";
             }
-            answer[1] = answer[1].TrimEnd('/');
+
+            if (directoryInfo.GetFiles().Length > 0)
+            {
+                foreach (FileInfo file in directoryInfo.GetFiles())
+                {
+                    answer[1] += file.Name + "/";                                // ??? Слеш
+                }
+                answer[1] = answer[1].TrimEnd('/');
+            }
+            else
+            {
+                answer[1] = "";
+            }
+
 
             return answer;
         }
