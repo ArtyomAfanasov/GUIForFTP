@@ -44,34 +44,18 @@
             {
                 // в случае, если путь для загрузок выбран корректный, но до подключения к серверу
                 // И чтобы после этого и после подлкючения к серверу можно было качать файлы в уже выбранный корректный путь 
-                if (((MainWindow)Application.Current.MainWindow).textBoxSavePath.Text != "")
-                {
-                    viewModel.PathToSaveFile = ((MainWindow)Application.Current.MainWindow).textBoxSavePath.Text;
-                }
+                //if (((MainWindow)Application.Current.MainWindow).textBoxSavePath.Text != "")
+                //{
+                //    viewModel.PathToSaveFile = ((MainWindow)Application.Current.MainWindow).textBoxSavePath.Text;
+                ///}
 
                 viewModel.DownloadFile(((ListBox)sender).SelectedItem.ToString());
             }                                      
         }
 
         private async void buttonDownloadAll_PreviewMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            //try
-            //{
-
-            // в случае, если путь для загрузок выбран корректный, но до подключения к серверу
-            // И чтобы после этого и после подлкючения к серверу можно было качать файлы в уже выбранный корректный путь 
-            //if (((MainWindow)Application.Current.MainWindow).textBoxSavePath.Text != "")
-            //{
-            //    viewModel.PathToSaveFile = ((MainWindow)Application.Current.MainWindow).textBoxSavePath.Text;
-            //}
-
-            await viewModel.DownloadAllFiles();
-
-            //}
-            //catch (NullReferenceException)
-            //{
-                //MessageBox.Show("Чтобы скачать все файлы в папке сначала необходимо подключится к серверу");
-            //}
+        {            
+            await viewModel.DownloadAllFiles();          
         }
     }
 }
