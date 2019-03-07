@@ -1,7 +1,11 @@
 ﻿namespace GUIForFTP
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.IO;
+    using System.Net.Sockets;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using System.Windows;
 
@@ -58,11 +62,33 @@
             get => pathToSaveFile;
             set
             {
-                pathToSaveFile = value;
-                if (clientModel != null)
+                if (value != "")
                 {
-                    clientModel.pathToSaveFileModel = pathToSaveFile;
-                }                
+                    var pathToSave = value;
+                    var intexLastSlash = pathToSave.LastIndexOf("\\");
+                    if (intexLastSlash == -1)
+                    {
+                        MessageBox.Show("Каталога, в котором вы хотите создать папку для загрузок не существует.");
+                        return;
+                    }
+                    var pathWithoutFolderName = pathToSave.Remove(intexLastSlash, pathToSave.Length - intexLastSlash);
+
+                    if (!Directory.Exists(pathWithoutFolderName))
+                    {
+                        MessageBox.Show("Каталога, в котором вы хотите создать папку для загрузок не существует.");
+                        return;
+                    }
+
+                    if (clientModel == null)
+                    {
+                        MessageBox.Show("Перед выбором папки для загрузок необходимо подключиться к серверу");
+                    }
+                    else
+                    {
+                        pathToSaveFile = value;
+                        clientModel.pathToSaveFileModel = pathToSaveFile;
+                    }
+                }                                                                 
             }
         }
                     
@@ -72,15 +98,21 @@
         /// <param name="portFromThisViewModel">Порт, полученный от Vm</param>
         /// <param name="addressFromThisViewModel">Адресс, полученный от VM</param>
         public async void Connect(string portFromThisViewModel, string addressFromThisViewModel)
-        {
+        {            
             DirectoriesAndFiles.Clear();
             clientModel = new ClientModel(portFromThisViewModel, addressFromThisViewModel, this);
-            
-            var tree = await clientModel.ShowDirectoriesTree(false, "");
 
-            foreach (string dirThenFile in tree)
+            try
             {
-                DirectoriesAndFiles.Add(dirThenFile);
+                var tree = await clientModel.ShowDirectoriesTree(false, "");
+                foreach (string dirThenFile in tree)
+                {
+                    DirectoriesAndFiles.Add(dirThenFile);
+                }
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message); // ????????????? todo
             }
         }
 
@@ -111,7 +143,7 @@
             }
             catch
             {
-                MessageBox.Show("Что-то пошло не так");                
+                MessageBox.Show("Что-то пошло не так");         // ????????????? todo        
             }            
         }
 

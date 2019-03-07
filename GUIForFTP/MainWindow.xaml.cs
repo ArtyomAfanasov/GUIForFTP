@@ -54,7 +54,7 @@
             }
             catch (NullReferenceException)
             {
-                MessageBox.Show("Для начала подключитесь к серверу");
+                MessageBox.Show("Чтобы скачать все файлы в папке сначала необходимо подключится к серверу");
             }
         }
     }

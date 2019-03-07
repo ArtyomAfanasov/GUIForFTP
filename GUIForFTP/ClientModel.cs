@@ -86,9 +86,9 @@
                         currentServerPath = serverPath;
                     }
                 }
-                catch (Exception e)
+                catch (Exception exception)
                 {
-                    MessageBox.Show(e.Message);
+                    throw new Exception("Не удалось подключиться к серверу", exception); // ????????????? todo
                 }
             }
         }
@@ -158,9 +158,9 @@
                     }                                    
                 }
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                MessageBox.Show(e.Message);
+                throw new Exception("Не удалось подключиться к серверу", exception); // ????????????? todo
             }
 
             viewModel.isDirectory = isDirectory;
@@ -200,7 +200,7 @@
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show(e.Message); // ????????????? todo
             }
         }
 
@@ -219,7 +219,7 @@
                 }
                 else
                 {
-                    MessageBox.Show("Подключитесь к серверу.");
+                    MessageBox.Show("Подключитесь к серверу."); // ????????????? todo
                     return;
                 }                
             
@@ -236,7 +236,7 @@
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show(e.Message); // ????????????? todo
             }
         }
     }
