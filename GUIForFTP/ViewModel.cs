@@ -64,7 +64,7 @@
             {
                 if (value != "")
                 {                    
-                    var pathToSave = value;
+                    /*var pathToSave = value;
                     var intexLastSlash = pathToSave.LastIndexOf("\\");
                     if (intexLastSlash == -1)
                     {
@@ -72,10 +72,11 @@
                         return;
                     }
                     var pathWithoutFolderName = pathToSave.Remove(intexLastSlash, pathToSave.Length - intexLastSlash);
+                    */
 
-                    if (!Directory.Exists(pathWithoutFolderName))
+                    if (!Directory.Exists(value))
                     {
-                        MessageBox.Show("Каталога, в котором вы хотите создать папку для загрузок не существует.");
+                        MessageBox.Show("Каталога, который Вы хотите задать как папку загрузок не существует.");
                         return;
                     }
 
@@ -101,18 +102,18 @@
             DirectoriesAndFiles.Clear();
             clientModel = new ClientModel(portFromThisViewModel, addressFromThisViewModel, this);
 
-            try
-            {
+            //try
+            //{
                 var tree = await clientModel.ShowDirectoriesTree(false, "");
                 foreach (string dirThenFile in tree)
                 {
                     DirectoriesAndFiles.Add(dirThenFile);
                 }
-            }
-            catch (Exception exception)
-            {
-                MessageBox.Show(exception.Message); // ????????????? todo
-            }
+            //}
+            //catch (Exception exception)
+            //{
+            //    MessageBox.Show(exception.Message); // ????????????? todo
+            //}
         }
 
         /// <summary>

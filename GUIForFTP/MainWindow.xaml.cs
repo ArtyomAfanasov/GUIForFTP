@@ -41,14 +41,7 @@
                 viewModel.UpdateDirectoriesTree(((ListBox)sender).SelectedItem.ToString()); 
             }
             else
-            {
-                // в случае, если путь для загрузок выбран корректный, но до подключения к серверу
-                // И чтобы после этого и после подлкючения к серверу можно было качать файлы в уже выбранный корректный путь 
-                //if (((MainWindow)Application.Current.MainWindow).textBoxSavePath.Text != "")
-                //{
-                //    viewModel.PathToSaveFile = ((MainWindow)Application.Current.MainWindow).textBoxSavePath.Text;
-                ///}
-
+            {                
                 viewModel.DownloadFile(((ListBox)sender).SelectedItem.ToString());
             }                                      
         }

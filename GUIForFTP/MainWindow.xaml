@@ -80,7 +80,10 @@
         <TabItem Header="Справка">
             <StackPanel>
                 <TextBlock>Двойной клик ЛКМ по файлу - скачать файл.</TextBlock>
+                <TextBlock/>
                 <TextBlock>Двойной клик ЛКМ по папке - открыть папку.</TextBlock>
+                <TextBlock/>
+                <TextBlock TextWrapping="Wrap">Папкой для загрузки файлов, до того как её изменил пользователь, является GUIForFTPDonwload, находящаяся в папке с .exe файлом для запуска приложения</TextBlock>
             </StackPanel>
         </TabItem>
     </TabControl>
