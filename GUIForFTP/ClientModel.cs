@@ -9,6 +9,9 @@
     using System.Windows;
     using System.Windows.Threading;
 
+    /// <summary>
+    /// Класс, представляющий бизнес-логику клиента
+    /// </summary>
     class ClientModel
     {
         /// <summary>
@@ -21,6 +24,9 @@
         /// </summary>
         private readonly string modelAddress;
 
+        /// <summary>
+        /// Объект класса <see cref="ViewModel"/>
+        /// </summary>
         private readonly ViewModel viewModel;
 
         public ClientModel(string portFromVM, string addressFromVM, ViewModel viewModel)
@@ -73,7 +79,6 @@
                 using (var client = await Task.Factory.StartNew(() =>
                             new TcpClient(modelAddress, Convert.ToInt32(modelPort))))
                 {
-
                     var stream = client.GetStream();
                     var writer = new StreamWriter(stream);
                     await writer.WriteLineAsync("path");
@@ -87,10 +92,13 @@
                 }                                               
             }
         }
-        
+
         /// <summary>
         /// Запрос серверу о получении коллекции файлов и папок 
         /// </summary>
+        /// <param name="isUpdateTree">Этот вызов обновит существующее дерево?</param>
+        /// <param name="addDirectoryToServerPath">Папка, которую выбрал пользователь</param>
+        /// <returns></returns>
         public async Task<ObservableCollection<string>> ShowDirectoriesTree(bool isUpdateTree, string addDirectoryToServerPath)
         {
             await GetServerPathOnConnectionToServer();            
@@ -160,80 +168,55 @@
         /// <summary>
         /// Запрос серверу на скачивание файла
         /// </summary>
-        /// <param name="fileName"></param>        
+        /// <param name="fileName">Имя скачиваемого файла</param>        
         public async Task DownloadFile(string fileName)
-        {            
-            //try
-            //{
-                using (var client = new TcpClient(modelAddress, Convert.ToInt32(modelPort)))
-                {                
-                    var stream = client.GetStream();
-                    var writer = new StreamWriter(stream);
-                    await writer.WriteLineAsync("Download");
-                    await writer.WriteLineAsync(currentServerPath + @"\" + fileName); 
-                    await writer.FlushAsync();
-                    
-                    viewModel.DownloadingFiles.Add(fileName);
+        {
+            using (var client = await Task.Factory.StartNew(() =>
+                new TcpClient(modelAddress, Convert.ToInt32(modelPort))))
+            {
+                var stream = client.GetStream();
+                var writer = new StreamWriter(stream);
+                await writer.WriteLineAsync("Download");
+                await writer.WriteLineAsync(currentServerPath + @"\" + fileName);
+                await writer.FlushAsync();
 
-                    var reader = new StreamReader(stream);
-                    var content = await reader.ReadToEndAsync();
+                viewModel.DownloadingFiles.Add(fileName);
 
-                    using (var textFile = new StreamWriter(pathToSaveFileModel + @"\" + fileName))
-                    {
-                        textFile.WriteLine(content);                        
-                    }
-                    
-                    viewModel.DownloadingFiles.Add(fileName + " скачался!");
-                    viewModel.DownloadedFiles.Add(fileName);
+                var reader = new StreamReader(stream);
+                var content = await reader.ReadToEndAsync();
+
+                using (var textFile = new StreamWriter(pathToSaveFileModel + @"\" + fileName))
+                {
+                    textFile.WriteLine(content);
                 }
-            //}
-            //catch (Exception e)
-            //{
-            //    MessageBox.Show(e.Message); // ????????????? todo
-            //}
+
+                viewModel.DownloadingFiles.Add(fileName + " скачался!");
+                viewModel.DownloadedFiles.Add(fileName);
+            }            
         }
 
         /// <summary>
         /// Запрос серверу о необходимости скачать все файлы в директории
         /// </summary>        
-        public async Task DownloadAllFiles()
+        public void DownloadAllFiles()
         {
-            // в случае, если путь для загрузок выбран корректный, но до подключения к серверу
-            // И чтобы после этого и после подлкючения к серверу можно было качать файлы в уже выбранный корректный путь 
+            // в случае, если путь для загрузок выбран корректный, но до подключения к серверу.
+            // И чтобы после этого и после подлючения к серверу можно было качать файлы в уже выбранный корректный путь 
             if (((MainWindow)Application.Current.MainWindow).textBoxSavePath.Text != "")
             {
                 viewModel.PathToSaveFile = ((MainWindow)Application.Current.MainWindow).textBoxSavePath.Text;
             }
 
-            DirectoryInfo directoryInfo;
+            var directoryInfo = new DirectoryInfo(currentServerPath);
 
-            //try
-            //{
-                /*if (currentServerPath != "")
-                {
-                    directoryInfo = new DirectoryInfo(currentServerPath);
+            if (directoryInfo.GetFiles().Length > 0)
+            {                
+                foreach (FileInfo file in directoryInfo.GetFiles())
+                {                   
+                    new Task(async () => await DownloadFile(file.Name)).
+                            Start(TaskScheduler.FromCurrentSynchronizationContext());                    
                 }
-                else
-                {
-                    MessageBox.Show("Чтобы скачать все файлы в папке сначала необходимо подключится к серверу."); // ????????????? todo
-                    return;
-                }*/            
-            
-                directoryInfo = new DirectoryInfo(currentServerPath);
-
-                if (directoryInfo.GetFiles().Length > 0)
-                {                
-                    foreach (FileInfo file in directoryInfo.GetFiles())
-                    {
-                        new Task(async () => await DownloadFile(file.Name)).
-                                Start(TaskScheduler.FromCurrentSynchronizationContext());                                                                                            
-                    }
-                }
-            //}
-            //catch (Exception e)
-            //{
-            //    MessageBox.Show(e.Message); // ????????????? todo
-            //}
+            }            
         }
     }
 }

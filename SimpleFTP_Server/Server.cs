@@ -4,6 +4,7 @@
     using System.IO;
     using System.Net;
     using System.Net.Sockets;
+    using System.Threading;
 
     /// <summary>
     /// Класс, принимающий и обрабатывающий запросы о листинге и скачивании файлов
@@ -54,48 +55,12 @@
             {
                 try
                 {
-                    using (var client = await listener.AcceptTcpClientAsync())
-                    {
-                        Console.WriteLine("Клиент подключился");
+                    var client = await listener.AcceptTcpClientAsync();
+                    
+                    Console.WriteLine("Клиент подключился");
 
-                        var stream = client.GetStream();
-                        var reader = new StreamReader(stream);
-                        var request = reader.ReadLine();
-                        var path = reader.ReadLine();
-
-                        Console.WriteLine($"Получен запрос: вид - {request}, путь - {path}");
-                        string answer;
-                        StreamWriter writer = new StreamWriter(stream);
-
-                        switch (request)
-                        {
-                            case "Listing":
-                                answer = Deserialize(GetArrayOfFilesAndDirectoies(path));
-                                Console.WriteLine($"Буду отправлять: {answer}");
-                                writer.WriteLine(answer);
-                                writer.Flush();
-                                break;
-                            case "Download":
-                                answer = DownloadFile(path);
-                                Console.WriteLine($"Буду отправлять: {answer}");
-                                writer.WriteLine(answer);
-                                writer.Flush();
-                                break;
-                            case "path":
-                                answer = new DirectoryInfo(Directory.GetCurrentDirectory()).
-                                    Parent.Parent.FullName;
-                                Console.WriteLine($"Буду отправлять: {answer}");
-                                writer.WriteLine(answer);
-                                writer.Flush();
-                                break;
-                            default:
-                                answer = Deserialize(new string[1] { "Есть только запросы: 1 или 2" });
-                                Console.WriteLine("Буду отправлять: Есть только запросы: 1 или 2");
-                                writer.WriteLine(answer);
-                                writer.Flush();
-                                break;
-                        }
-                    }                                                                                                                                                  
+                    ThreadPool.QueueUserWorkItem(PerformRequest, client);                        
+                                                                                                                                                                      
                 }
                 catch (Exception e)
                 {                    
@@ -103,6 +68,49 @@
                     Console.WriteLine("\n\nСервер снова слушает . . .");
                 }               
             }            
+        }
+
+        /// <summary>
+        /// Выполнение запроса
+        /// </summary>
+        /// <param name="client">Объект клиента, который сделал запрос</param>
+        private void PerformRequest(object client)
+        {
+            var currentClient = (TcpClient)client;
+            var stream = currentClient.GetStream();
+            var reader = new StreamReader(stream);
+            var request = reader.ReadLine();
+            var path = reader.ReadLine();
+
+            Console.WriteLine($"Получен запрос: вид - {request}, путь - {path}");
+            string answer;
+            var writer = new StreamWriter(stream);
+
+            switch (request)
+            {
+                case "Listing":
+                    answer = Deserialize(GetArrayOfFilesAndDirectoies(path));
+                    Console.WriteLine($"Буду отправлять: {answer}");
+                    writer.WriteLine(answer);
+                    writer.Flush();
+                    currentClient.Close();
+                    break;
+                case "Download":
+                    answer = DownloadFile(path);
+                    Console.WriteLine($"Буду отправлять: {answer}");
+                    writer.WriteLine(answer);
+                    writer.Flush();
+                    currentClient.Close();
+                    break;
+                case "path":
+                    answer = new DirectoryInfo(Directory.GetCurrentDirectory()).
+                        Parent.Parent.FullName;
+                    Console.WriteLine($"Буду отправлять: {answer}");
+                    writer.WriteLine(answer);
+                    writer.Flush();
+                    currentClient.Close();
+                    break;
+            }
         }
         
         /// <summary>
@@ -158,11 +166,9 @@
                 answer[1] = "";
             }
 
-
             return answer;
         }
-
-        // todo
+        
         /// <summary>
         /// Ответ на запрос о содержимом файла
         /// </summary>

@@ -158,11 +158,11 @@
         /// Сообщить модели скачать все файлы
         /// </summary>
         /// <returns></returns>
-        public async Task DownloadAllFiles()
+        public void DownloadAllFiles()
         {
             try
             {
-                await clientModel.DownloadAllFiles();
+                clientModel.DownloadAllFiles();
             }           
             catch (NullReferenceException)
             {    
