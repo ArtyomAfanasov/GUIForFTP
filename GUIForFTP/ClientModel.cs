@@ -64,32 +64,27 @@
         /// <summary>
         /// Получить путь, на который смотрит сервер
         /// </summary>
-        private async Task GetServerPath()
+        private async Task GetServerPathOnConnectionToServer()
         {
             if (serverPath == "")
-            {                
-                try
-                {
-                    Directory.CreateDirectory(pathToSaveFileModel); // перенёс в try
-                    using (var client = await Task.Factory.StartNew(()=> 
+            {
+                Directory.CreateDirectory(pathToSaveFileModel);
+
+                using (var client = await Task.Factory.StartNew(() =>
                             new TcpClient(modelAddress, Convert.ToInt32(modelPort))))
-                    {
-                        var stream = client.GetStream();
-                        var writer = new StreamWriter(stream);
-                        await writer.WriteLineAsync("path");
-                        await writer.WriteLineAsync("giveMePath");
-                        await writer.FlushAsync();
-
-                        var reader = new StreamReader(stream);  // получили путь, если его не было
-                        serverPath = await reader.ReadLineAsync();
-
-                        currentServerPath = serverPath;
-                    }
-                }
-                catch (Exception exception)
                 {
-                    throw new Exception("Не удалось подключиться к серверу", exception); // ????????????? todo
-                }
+
+                    var stream = client.GetStream();
+                    var writer = new StreamWriter(stream);
+                    await writer.WriteLineAsync("path");
+                    await writer.WriteLineAsync("giveMePath");
+                    await writer.FlushAsync();
+
+                    var reader = new StreamReader(stream);
+                    serverPath = await reader.ReadLineAsync();
+
+                    currentServerPath = serverPath;
+                }                                               
             }
         }
         
@@ -98,7 +93,7 @@
         /// </summary>
         public async Task<ObservableCollection<string>> ShowDirectoriesTree(bool isUpdateTree, string addDirectoryToServerPath)
         {
-            await GetServerPath();            
+            await GetServerPathOnConnectionToServer();            
             if (isUpdateTree)
             {                
                 if (addDirectoryToServerPath == "..")
@@ -111,59 +106,53 @@
                     currentServerPath += @"\" + addDirectoryToServerPath;
                 }                
             }
-            
-            try
+
+            using (var client = await Task.Factory.StartNew(() =>
+                        new TcpClient(modelAddress, Convert.ToInt32(modelPort))))
             {
-                using (var client = await Task.Factory.StartNew(() =>
-                            new TcpClient(modelAddress, Convert.ToInt32(modelPort))))
-                {                                
-                    var stream = client.GetStream();
-                    var writer = new StreamWriter(stream);
-                    await writer.WriteLineAsync("Listing");
-                    await writer.WriteLineAsync(currentServerPath);
-                    await writer.FlushAsync();                    
 
-                    var reader = new StreamReader(stream);
-                    var stringDirsAndFiles = await reader.ReadLineAsync();
-                    
-                    var splitDirsAndFiles = stringDirsAndFiles.Split(' ');
-                    var dirStringWithSpace = splitDirsAndFiles[0].Replace("?", " ");
-                    var dirsArray  = dirStringWithSpace.Split('/');
-                    var filesStringWithSpace = splitDirsAndFiles[1].Replace("?", " ");
-                    var filesArray = filesStringWithSpace.Split('/');
+                var stream = client.GetStream();
+                var writer = new StreamWriter(stream);
+                await writer.WriteLineAsync("Listing");
+                await writer.WriteLineAsync(currentServerPath);
+                await writer.FlushAsync();
 
-                    directoriesAndFiles.Clear();
-                    isDirectory.Clear();
+                var reader = new StreamReader(stream);
+                var stringDirsAndFiles = await reader.ReadLineAsync();
 
-                    if (currentServerPath != serverPath)
+                var splitDirsAndFiles = stringDirsAndFiles.Split(' ');
+                var dirStringWithSpace = splitDirsAndFiles[0].Replace("?", " ");
+                var dirsArray = dirStringWithSpace.Split('/');
+                var filesStringWithSpace = splitDirsAndFiles[1].Replace("?", " ");
+                var filesArray = filesStringWithSpace.Split('/');
+
+                directoriesAndFiles.Clear();
+                isDirectory.Clear();
+
+                if (currentServerPath != serverPath)
+                {
+                    directoriesAndFiles.Add("..");
+                    isDirectory.Add(false);
+                }
+                foreach (string element in dirsArray)
+                {
+                    if (element != "")
                     {
-                        directoriesAndFiles.Add("..");
+                        directoriesAndFiles.Add(element);
+                        isDirectory.Add(true);
+                    }
+                }
+                foreach (string element in filesArray)
+                {
+                    if (element != "")
+                    {
+                        directoriesAndFiles.Add(element);
                         isDirectory.Add(false);
                     }
-                    foreach (string element in dirsArray)
-                    {
-                        if (element != "")
-                        {
-                            directoriesAndFiles.Add(element);
-                            isDirectory.Add(true);
-                        }
-                    }
-                    foreach (string element in filesArray)
-                    {
-                        if (element != "")
-                        {
-                            directoriesAndFiles.Add(element);
-                            isDirectory.Add(false);
-                        }
-                    }                                    
                 }
-            }
-            catch (Exception exception)
-            {
-                throw new Exception("Не удалось подключиться к серверу", exception); // ????????????? todo
-            }
 
-            viewModel.isDirectory = isDirectory;
+                viewModel.isDirectory = isDirectory;
+            }
 
             return directoriesAndFiles;
         }
@@ -174,8 +163,8 @@
         /// <param name="fileName"></param>        
         public async Task DownloadFile(string fileName)
         {            
-            try
-            {
+            //try
+            //{
                 using (var client = new TcpClient(modelAddress, Convert.ToInt32(modelPort)))
                 {                
                     var stream = client.GetStream();
@@ -197,11 +186,11 @@
                     viewModel.DownloadingFiles.Add(fileName + " скачался!");
                     viewModel.DownloadedFiles.Add(fileName);
                 }
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message); // ????????????? todo
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    MessageBox.Show(e.Message); // ????????????? todo
+            //}
         }
 
         /// <summary>
@@ -218,8 +207,8 @@
 
             DirectoryInfo directoryInfo;
 
-            try
-            {
+            //try
+            //{
                 /*if (currentServerPath != "")
                 {
                     directoryInfo = new DirectoryInfo(currentServerPath);
@@ -240,11 +229,11 @@
                                 Start(TaskScheduler.FromCurrentSynchronizationContext());                                                                                            
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message); // ????????????? todo
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    MessageBox.Show(e.Message); // ????????????? todo
+            //}
         }
     }
 }
