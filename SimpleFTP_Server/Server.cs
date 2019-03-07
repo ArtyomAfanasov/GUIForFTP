@@ -56,7 +56,6 @@
                 try
                 {
                     var client = await listener.AcceptTcpClientAsync();
-                    
                     Console.WriteLine("Клиент подключился");
 
                     ThreadPool.QueueUserWorkItem(PerformRequest, client);                        
@@ -76,40 +75,48 @@
         /// <param name="client">Объект клиента, который сделал запрос</param>
         private void PerformRequest(object client)
         {
-            var currentClient = (TcpClient)client;
-            var stream = currentClient.GetStream();
-            var reader = new StreamReader(stream);
-            var request = reader.ReadLine();
-            var path = reader.ReadLine();
-
-            Console.WriteLine($"Получен запрос: вид - {request}, путь - {path}");
-            string answer;
-            var writer = new StreamWriter(stream);
-
-            switch (request)
+            TcpClient currentClient = null;
+            try
             {
-                case "Listing":
-                    answer = Deserialize(GetArrayOfFilesAndDirectoies(path));
-                    Console.WriteLine($"Буду отправлять: {answer}");
-                    writer.WriteLine(answer);
-                    writer.Flush();
-                    currentClient.Close();
-                    break;
-                case "Download":
-                    answer = DownloadFile(path);
-                    Console.WriteLine($"Буду отправлять: {answer}");
-                    writer.WriteLine(answer);
-                    writer.Flush();
-                    currentClient.Close();
-                    break;
-                case "path":
-                    answer = new DirectoryInfo(Directory.GetCurrentDirectory()).
-                        Parent.Parent.FullName;
-                    Console.WriteLine($"Буду отправлять: {answer}");
-                    writer.WriteLine(answer);
-                    writer.Flush();
-                    currentClient.Close();
-                    break;
+                currentClient = (TcpClient)client;
+                var stream = currentClient.GetStream();
+                var reader = new StreamReader(stream);
+                var request = reader.ReadLine();
+                var path = reader.ReadLine();
+
+                Console.WriteLine($"Получен запрос: вид - {request}, путь - {path}");
+                string answer;
+                var writer = new StreamWriter(stream);
+
+                switch (request)
+                {
+                    case "Listing":
+                        answer = Deserialize(GetArrayOfFilesAndDirectoies(path));
+                        Console.WriteLine($"Буду отправлять: {answer}");
+                        writer.WriteLine(answer);
+                        writer.Flush();
+                        currentClient.Close();
+                        break;
+                    case "Download":
+                        answer = DownloadFile(path);
+                        Console.WriteLine($"Буду отправлять: {answer}");
+                        writer.WriteLine(answer);
+                        writer.Flush();
+                        currentClient.Close();
+                        break;
+                    case "path":
+                        answer = new DirectoryInfo(Directory.GetCurrentDirectory()).
+                            Parent.Parent.FullName;
+                        Console.WriteLine($"Буду отправлять: {answer}");
+                        writer.WriteLine(answer);
+                        writer.Flush();
+                        currentClient.Close();
+                        break;
+                }
+            }
+            finally
+            {
+                currentClient.Close();
             }
         }
         

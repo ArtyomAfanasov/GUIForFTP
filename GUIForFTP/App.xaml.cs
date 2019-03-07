@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
-
-namespace GUIForFTP
+﻿namespace GUIForFTP
 {
+    using System.Windows;
+
     /// <summary>
     /// Логика взаимодействия для App.xaml
     /// </summary>
     public partial class App : Application
-    {
+    {        
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
-        {
+        {            
             if (e.Exception.Message == "Путь имеет недопустимую форму.")
             {
+                // Обработка кнопки "Скачать все файлы" после неудачного подключения 
+                // (это подключение должно быть 2ым или более за время работы приложения)
                 MessageBox.Show("Чтобы скачать все файлы в папке сначала необходимо подключится к серверу");
             }
             else

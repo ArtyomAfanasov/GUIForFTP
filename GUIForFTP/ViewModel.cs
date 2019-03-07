@@ -4,9 +4,6 @@
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.IO;
-    using System.Net.Sockets;
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
     using System.Windows;
 
     /// <summary>
@@ -52,10 +49,14 @@
         /// </summary>
         public string Port { get; set; }
 
+        /// <summary>
+        /// Путь для сохранения файлов
+        /// </summary>
         private string pathToSaveFile;
 
         /// <summary>
-        /// Путь для сохранения файлов
+        /// Путь для сохранения файлов. 
+        /// Работа с полем ввода пути для сохранения файлов.
         /// </summary>
         public string PathToSaveFile
         {
@@ -63,17 +64,7 @@
             set
             {
                 if (value != "")
-                {                    
-                    /*var pathToSave = value;
-                    var intexLastSlash = pathToSave.LastIndexOf("\\");
-                    if (intexLastSlash == -1)
-                    {
-                        MessageBox.Show("Каталога, в котором вы хотите создать папку для загрузок не существует.");
-                        return;
-                    }
-                    var pathWithoutFolderName = pathToSave.Remove(intexLastSlash, pathToSave.Length - intexLastSlash);
-                    */
-
+                {                                        
                     if (!Directory.Exists(value))
                     {
                         MessageBox.Show("Каталога, который Вы хотите задать как папку загрузок не существует.");
@@ -101,28 +92,21 @@
         {            
             DirectoriesAndFiles.Clear();
             clientModel = new ClientModel(portFromThisViewModel, addressFromThisViewModel, this);
-
-            //try
-            //{
-                var tree = await clientModel.ShowDirectoriesTree(false, "");
-                foreach (string dirThenFile in tree)
-                {
-                    DirectoriesAndFiles.Add(dirThenFile);
-                }
-            //}
-            //catch (Exception exception)
-            //{
-            //    MessageBox.Show(exception.Message); // ????????????? todo
-            //}
+            
+            var tree = await clientModel.ShowDirectoriesTree(false, "");
+            foreach (string dirThenFile in tree)
+            {
+                DirectoriesAndFiles.Add(dirThenFile);
+            }            
         }
 
         /// <summary>
         /// Сообщить модели об изменении представления катологов
         /// </summary>
-        /// <param name="addDirectoryToServerPath"></param>
+        /// <param name="addDirectoryToServerPath">Имя папки, выбранной пользователем</param>
         public async void UpdateDirectoriesTree(string addDirectoryToServerPath)
         {
-            var tree = await clientModel.ShowDirectoriesTree(true, addDirectoryToServerPath); // TODO!
+            var tree = await clientModel.ShowDirectoriesTree(true, addDirectoryToServerPath); 
 
             DirectoriesAndFiles.Clear();
             foreach (string dirThenFile in tree)
@@ -134,7 +118,7 @@
         /// <summary>
         /// Передать модели информации о необходимости скачать файл
         /// </summary>
-        /// <param name="fileName"></param>
+        /// <param name="fileName">Имя файла, выбранного пользователем</param>
         public async void DownloadFile(string fileName)
         {
             // в случае, если путь для загрузок выбран корректный, но до подключения к серверу
@@ -143,21 +127,13 @@
             {
                 PathToSaveFile = ((MainWindow)Application.Current.MainWindow).textBoxSavePath.Text;
             }
-
-            try
-            {
-                await clientModel.DownloadFile(fileName);
-            }
-            catch
-            {
-                MessageBox.Show("Что-то пошло не так");         // ????????????? todo        
-            }            
+            
+            await clientModel.DownloadFile(fileName);    // ?????? todo обработка ошибок                                
         }
 
         /// <summary>
         /// Сообщить модели скачать все файлы
-        /// </summary>
-        /// <returns></returns>
+        /// </summary>        
         public void DownloadAllFiles()
         {
             try
@@ -166,7 +142,7 @@
             }           
             catch (NullReferenceException)
             {    
-            MessageBox.Show("Чтобы скачать все файлы в папке сначала необходимо подключится к серверу");
+                MessageBox.Show("Чтобы скачать все файлы в папке сначала необходимо подключится к серверу");
             }
         }
     }

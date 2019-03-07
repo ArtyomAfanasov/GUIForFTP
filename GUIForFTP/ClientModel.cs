@@ -7,7 +7,6 @@
     using System.Net.Sockets;
     using System.Threading.Tasks;
     using System.Windows;
-    using System.Windows.Threading;
 
     /// <summary>
     /// Класс, представляющий бизнес-логику клиента
@@ -29,6 +28,12 @@
         /// </summary>
         private readonly ViewModel viewModel;
 
+        /// <summary>
+        /// Конструктор, задающий указанные пользователем порт, адрес сервера. Также задаёт объект VM
+        /// </summary>
+        /// <param name="portFromVM">Указанный пользователем порт сервера</param>
+        /// <param name="addressFromVM">Указанный пользователем адресс сервера</param>
+        /// <param name="viewModel">Объект ViewModel</param>
         public ClientModel(string portFromVM, string addressFromVM, ViewModel viewModel)
         {
             modelPort = portFromVM;
@@ -98,7 +103,7 @@
         /// </summary>
         /// <param name="isUpdateTree">Этот вызов обновит существующее дерево?</param>
         /// <param name="addDirectoryToServerPath">Папка, которую выбрал пользователь</param>
-        /// <returns></returns>
+        /// <returns>Коллекцию папок и файлов</returns>
         public async Task<ObservableCollection<string>> ShowDirectoriesTree(bool isUpdateTree, string addDirectoryToServerPath)
         {
             await GetServerPathOnConnectionToServer();            
@@ -170,7 +175,7 @@
         /// </summary>
         /// <param name="fileName">Имя скачиваемого файла</param>        
         public async Task DownloadFile(string fileName)
-        {
+        {            
             using (var client = await Task.Factory.StartNew(() =>
                 new TcpClient(modelAddress, Convert.ToInt32(modelPort))))
             {
