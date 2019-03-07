@@ -173,7 +173,7 @@
         /// </summary>
         /// <param name="fileName"></param>        
         public async Task DownloadFile(string fileName)
-        {
+        {            
             try
             {
                 using (var client = new TcpClient(modelAddress, Convert.ToInt32(modelPort)))
@@ -209,19 +209,26 @@
         /// </summary>        
         public async Task DownloadAllFiles()
         {
+            // в случае, если путь для загрузок выбран корректный, но до подключения к серверу
+            // И чтобы после этого и после подлкючения к серверу можно было качать файлы в уже выбранный корректный путь 
+            if (((MainWindow)Application.Current.MainWindow).textBoxSavePath.Text != "")
+            {
+                viewModel.PathToSaveFile = ((MainWindow)Application.Current.MainWindow).textBoxSavePath.Text;
+            }
+
             DirectoryInfo directoryInfo;
 
             try
             {
-                if (currentServerPath != "")
+                /*if (currentServerPath != "")
                 {
                     directoryInfo = new DirectoryInfo(currentServerPath);
                 }
                 else
                 {
-                    MessageBox.Show("Подключитесь к серверу."); // ????????????? todo
+                    MessageBox.Show("Чтобы скачать все файлы в папке сначала необходимо подключится к серверу."); // ????????????? todo
                     return;
-                }                
+                }*/            
             
                 directoryInfo = new DirectoryInfo(currentServerPath);
 

@@ -63,7 +63,7 @@
             set
             {
                 if (value != "")
-                {
+                {                    
                     var pathToSave = value;
                     var intexLastSlash = pathToSave.LastIndexOf("\\");
                     if (intexLastSlash == -1)
@@ -82,12 +82,11 @@
                     if (clientModel == null)
                     {
                         MessageBox.Show("Перед выбором папки для загрузок необходимо подключиться к серверу");
+                        return;
                     }
-                    else
-                    {
-                        pathToSaveFile = value;
-                        clientModel.pathToSaveFileModel = pathToSaveFile;
-                    }
+
+                    pathToSaveFile = value;
+                    clientModel.pathToSaveFileModel = pathToSaveFile;                    
                 }                                                                 
             }
         }
@@ -153,7 +152,14 @@
         /// <returns></returns>
         public async Task DownloadAllFiles()
         {
-            await clientModel.DownloadAllFiles();
+            try
+            {
+                await clientModel.DownloadAllFiles();
+            }           
+            catch (NullReferenceException)
+            {    
+            MessageBox.Show("Чтобы скачать все файлы в папке сначала необходимо подключится к серверу");
+            }
         }
     }
 }
