@@ -188,7 +188,16 @@
                 viewModel.DownloadingFiles.Add(fileName);
 
                 var reader = new StreamReader(stream);
-                var content = await reader.ReadToEndAsync();
+                string content = "";
+                try
+                {
+                    content = await reader.ReadToEndAsync();
+                }
+                catch
+                {
+                    viewModel.DownloadingFiles.Add(fileName + " не удалось скачать");
+                    return;
+                }
 
                 using (var textFile = new StreamWriter(pathToSaveFileModel + @"\" + fileName))
                 {
