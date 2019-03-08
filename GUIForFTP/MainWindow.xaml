@@ -17,7 +17,7 @@
         <local:ViewModel x:Key="viewModel"/>
     </Window.Resources>
     <TabControl>
-        <TabItem Header="Настройки подключения">
+        <TabItem Header="Главная">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="88*"/>
