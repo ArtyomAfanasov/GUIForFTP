@@ -23,8 +23,9 @@
         private ViewModel viewModel = new ViewModel();
 
         private void buttonConnect_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            viewModel.Connect(viewModel.Port, viewModel.Address);              
+        {            
+            buttonConnect.IsEnabled = false;
+            viewModel.Connect(viewModel.Port, viewModel.Address);                        
         }
 
         private void listBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)

@@ -53,7 +53,8 @@
                         Text="{Binding Port, Mode=TwoWay}"/>
                 </StackPanel>
                 <Button Grid.Row="3" Grid.Column="2" Content="Подключиться"
-                        Name="buttonConnect" PreviewMouseUp="buttonConnect_MouseUp" Margin="10"/>
+                        Name="buttonConnect" PreviewMouseUp="buttonConnect_MouseUp" Margin="10">
+                </Button>
                 <ListBox Grid.Row="1" Grid.Column="2" Margin="2"
                          ItemsSource="{Binding Path=Active, Mode=OneWay}"/>
                 <Button Grid.Column="2" Grid.Row="2" Content="Очистить активность" Margin="10"

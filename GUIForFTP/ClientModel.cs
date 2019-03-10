@@ -195,7 +195,9 @@
             {
                 ShutdownGUIClient();
                 MessageBox.Show("Сервер оборвал соединение.");
-            }            
+            }
+
+            ((MainWindow)Application.Current.MainWindow).buttonConnect.IsEnabled = true; // против спама кнопки подключиться, из-за которого появляется исключение в методе обновления каталогов
         }
         
         /// <summary>
