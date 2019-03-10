@@ -58,8 +58,7 @@
                     var client = await listener.AcceptTcpClientAsync();
                     Console.WriteLine("Клиент подключился");
 
-                    ThreadPool.QueueUserWorkItem(PerformRequest, client);                        
-                                                                                                                                                                      
+                    ThreadPool.QueueUserWorkItem(PerformRequest, client);                                                                                                                                                                                              
                 }
                 catch (Exception e)
                 {                    
@@ -78,43 +77,48 @@
             TcpClient currentClient = null;
             try
             {
-                currentClient = (TcpClient)client;
-                var stream = currentClient.GetStream();
-                var reader = new StreamReader(stream);
-                var request = reader.ReadLine();
-                var path = reader.ReadLine();
-
-                Console.WriteLine($"Получен запрос: вид - {request}, путь - {path}");
-                string answer;
-                var writer = new StreamWriter(stream);
-
-                switch (request)
+                string request = string.Empty;
+                do
                 {
-                    case "Listing":
-                        answer = Deserialize(GetArrayOfFilesAndDirectoies(path));
-                        Console.WriteLine($"Буду отправлять: {answer}");
-                        writer.WriteLine(answer);
-                        writer.Flush();
-                        currentClient.Close();
-                        break;
-                    case "Download":
-                        answer = DownloadFile(path);
-                        Console.WriteLine($"Буду отправлять: {answer}");
-                        writer.WriteLine(answer);
-                        writer.Flush();
-                        currentClient.Close();
-                        break;
-                    case "path":
-                        answer = new DirectoryInfo(Directory.GetCurrentDirectory()).
-                            FullName;
-                        Console.WriteLine($"Буду отправлять: {answer}");
-                        writer.WriteLine(answer);
-                        writer.Flush();
-                        currentClient.Close();
-                        break;
+                    currentClient = (TcpClient)client;
+                    var stream = currentClient.GetStream();
+                    var reader = new StreamReader(stream);
+                        request = reader.ReadLine();
+                    var path = reader.ReadLine();
+
+                    Console.WriteLine($"Получен запрос: вид - {request}, путь - {path}");
+                    string answer;
+                    var writer = new StreamWriter(stream);
+
+                    switch (request)
+                    {
+                        case "Listing":
+                            answer = Deserialize(GetArrayOfFilesAndDirectoies(path));                            
+                            writer.WriteLine(answer);
+                            writer.Flush();
+                            Console.WriteLine($"Список файлов и папок отправлен.\n");
+                            //currentClient.Close();
+                            break;
+                        case "Download":
+                            answer = DownloadFile(path);                            
+                            writer.WriteLine(answer);
+                            writer.Flush();
+                            Console.WriteLine($"Содержимое файла отправлено.\n");
+                            currentClient.Close();
+                            break;
+                        case "path":
+                            answer = new DirectoryInfo(Directory.GetCurrentDirectory()).
+                                FullName;                            
+                            writer.WriteLine(answer);
+                            writer.Flush();
+                            Console.WriteLine($"Путь, на который смотрит сервер, отправлен.\n");
+                            //currentClient.Close();
+                            break;
+                    }
                 }
+                while (request != "Download");
             }
-            finally
+            catch (Exception e)
             {
                 currentClient.Close();
             }

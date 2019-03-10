@@ -90,14 +90,12 @@
         /// <param name="addressFromThisViewModel">Адресс, полученный от VM</param>
         public async void Connect(string portFromThisViewModel, string addressFromThisViewModel)
         {            
-            DirectoriesAndFiles.Clear();
+            //DirectoriesAndFiles.Clear(); // todo
             clientModel = new ClientModel(portFromThisViewModel, addressFromThisViewModel, this);
-            
-            var tree = await clientModel.ShowDirectoriesTree(false, "");
-            foreach (string dirThenFile in tree)
-            {
-                DirectoriesAndFiles.Add(dirThenFile);
-            }            
+
+            await clientModel.ConnectToServerFirstTime();
+            await clientModel.GetServerPathOnConnectionToServer();
+            await clientModel.ShowDirectoriesTree(false, "");                  
         }
 
         /// <summary>
@@ -106,13 +104,7 @@
         /// <param name="addDirectoryToServerPath">Имя папки, выбранной пользователем</param>
         public async void UpdateDirectoriesTree(string addDirectoryToServerPath)
         {
-            var tree = await clientModel.ShowDirectoriesTree(true, addDirectoryToServerPath); 
-
-            DirectoriesAndFiles.Clear();
-            foreach (string dirThenFile in tree)
-            {
-                DirectoriesAndFiles.Add(dirThenFile);
-            }            
+            await clientModel.ShowDirectoriesTree(true, addDirectoryToServerPath);                 
         }
 
         /// <summary>

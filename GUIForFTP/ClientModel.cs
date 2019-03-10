@@ -44,7 +44,7 @@
         /// <summary>
         /// Коллекция файлов и папок для передачи VM
         /// </summary>
-        private ObservableCollection<string> directoriesAndFiles = new ObservableCollection<string>();        
+        //private ObservableCollection<string> directoriesAndFiles = new ObservableCollection<string>();        
 
         /// <summary>
         /// Стек для возврата на уровни выше
@@ -54,7 +54,7 @@
         /// <summary>
         /// Коллекция флагов, определяющих директорию
         /// </summary>
-        private List<bool> isDirectory = new List<bool>();        
+        //private List<bool> isDirectory = new List<bool>();        
 
         /// <summary>
         /// Директория, на которую "смотрит" сервер
@@ -73,40 +73,86 @@
                                     FullName + @"\GUIForFTPDonwload";
 
         /// <summary>
+        /// Объект подключенного клиента
+        /// </summary>
+        private TcpClient GUIClient = new TcpClient();
+
+        /// <summary>
+        /// Поток для обмена информацией
+        /// </summary>
+        private NetworkStream GUIStream;
+
+        /// <summary>
+        /// Объект для чтения символов из потока
+        /// </summary>
+        private StreamReader GUIReader;
+
+        /// <summary>
+        /// Объект для записи символов в поток
+        /// </summary>
+        private StreamWriter GUIWriter;
+
+        /// <summary>
+        /// Подключение к новому серверу
+        /// </summary>
+        /// <returns></returns>
+        public async Task ConnectToServerFirstTime()
+        {
+            if (GUIClient.Connected)
+            {
+                ShutdownGUIClient();
+            }
+
+            GUIClient = await Task.Factory.StartNew(() =>
+                        new TcpClient(modelAddress, Convert.ToInt32(modelPort)));
+            GUIStream = GUIClient.GetStream();
+            GUIWriter = new StreamWriter(GUIStream);
+            GUIReader = new StreamReader(GUIStream);
+        }
+
+        /// <summary>
+        /// Высвобождение ресурсов потока и отключение клиента
+        /// </summary>
+        private void ShutdownGUIClient()
+        {
+            GUIWriter.Close();
+            GUIReader.Close();
+            GUIStream.Close();
+            GUIClient.Close();
+            serverPath = "";
+        }
+
+        /// <summary>
         /// Получить путь, на который смотрит сервер
         /// </summary>
-        private async Task GetServerPathOnConnectionToServer()
-        {
-            if (serverPath == "")
+        public async Task GetServerPathOnConnectionToServer()
+        {            
+            Directory.CreateDirectory(pathToSaveFileModel);
+
+            try
             {
-                Directory.CreateDirectory(pathToSaveFileModel);
+                await GUIWriter.WriteLineAsync("path");
+                await GUIWriter.WriteLineAsync("giveMePath");
+                await GUIWriter.FlushAsync();
 
-                using (var client = await Task.Factory.StartNew(() =>
-                            new TcpClient(modelAddress, Convert.ToInt32(modelPort))))
-                {
-                    var stream = client.GetStream();
-                    var writer = new StreamWriter(stream);
-                    await writer.WriteLineAsync("path");
-                    await writer.WriteLineAsync("giveMePath");
-                    await writer.FlushAsync();
+                serverPath = await GUIReader.ReadLineAsync();
 
-                    var reader = new StreamReader(stream);
-                    serverPath = await reader.ReadLineAsync();
-
-                    currentServerPath = serverPath;
-                }                                               
+                currentServerPath = serverPath;
             }
+            catch (Exception e)
+            {
+                ShutdownGUIClient();
+                MessageBox.Show("Наблюдаемый путь. Сервер оборвал соединение.");
+            }                                                                         
         }
 
         /// <summary>
         /// Запрос серверу о получении коллекции файлов и папок 
         /// </summary>
         /// <param name="isUpdateTree">Этот вызов обновит существующее дерево?</param>
-        /// <param name="addDirectoryToServerPath">Папка, которую выбрал пользователь</param>
-        /// <returns>Коллекцию папок и файлов</returns>
-        public async Task<ObservableCollection<string>> ShowDirectoriesTree(bool isUpdateTree, string addDirectoryToServerPath)
-        {
-            await GetServerPathOnConnectionToServer();            
+        /// <param name="addDirectoryToServerPath">Папка, которую выбрал пользователь</param>       
+        public async Task ShowDirectoriesTree(bool isUpdateTree, string addDirectoryToServerPath)
+        {                                    
             if (isUpdateTree)
             {                
                 if (addDirectoryToServerPath == "..")
@@ -120,18 +166,13 @@
                 }                
             }
 
-            using (var client = await Task.Factory.StartNew(() =>
-                        new TcpClient(modelAddress, Convert.ToInt32(modelPort))))
-            {
-
-                var stream = client.GetStream();
-                var writer = new StreamWriter(stream);
-                await writer.WriteLineAsync("Listing");
-                await writer.WriteLineAsync(currentServerPath);
-                await writer.FlushAsync();
-
-                var reader = new StreamReader(stream);
-                var stringDirsAndFiles = await reader.ReadLineAsync();
+            try
+            {               
+                await GUIWriter.WriteLineAsync("Listing");
+                await GUIWriter.WriteLineAsync(currentServerPath);
+                await GUIWriter.FlushAsync();
+               
+                var stringDirsAndFiles = await GUIReader.ReadLineAsync();
 
                 var splitDirsAndFiles = stringDirsAndFiles.Split(' ');
                 var dirStringWithSpace = splitDirsAndFiles[0].Replace("?", " ");
@@ -139,35 +180,36 @@
                 var filesStringWithSpace = splitDirsAndFiles[1].Replace("?", " ");
                 var filesArray = filesStringWithSpace.Split('/');
 
-                directoriesAndFiles.Clear();
-                isDirectory.Clear();
+                viewModel.DirectoriesAndFiles.Clear();
+                viewModel.isDirectory.Clear();
 
                 if (currentServerPath != serverPath)
                 {
-                    directoriesAndFiles.Add("..");
-                    isDirectory.Add(false);
+                    viewModel.DirectoriesAndFiles.Add("..");
+                    viewModel.isDirectory.Add(false);
                 }
                 foreach (string element in dirsArray)
                 {
                     if (element != "")
                     {
-                        directoriesAndFiles.Add(element);
-                        isDirectory.Add(true);
+                        viewModel.DirectoriesAndFiles.Add(element);
+                        viewModel.isDirectory.Add(true);
                     }
                 }
                 foreach (string element in filesArray)
                 {
                     if (element != "")
                     {
-                        directoriesAndFiles.Add(element);
-                        isDirectory.Add(false);
+                        viewModel.DirectoriesAndFiles.Add(element);
+                        viewModel.isDirectory.Add(false);
                     }
-                }
-
-                viewModel.isDirectory = isDirectory;
+                }                
             }
-
-            return directoriesAndFiles;
+            catch (Exception e)
+            {
+                ShutdownGUIClient();
+                MessageBox.Show("Обновление директорий. Сервер оборвал соединение.");
+            }            
         }
         
         /// <summary>
@@ -179,23 +221,23 @@
             using (var client = await Task.Factory.StartNew(() =>
                 new TcpClient(modelAddress, Convert.ToInt32(modelPort))))
             {
-                var stream = client.GetStream();
-                var writer = new StreamWriter(stream);
-                await writer.WriteLineAsync("Download");
-                await writer.WriteLineAsync(currentServerPath + @"\" + fileName);
-                await writer.FlushAsync();
+                var downloadStream = client.GetStream();
+                var downloadWriter = new StreamWriter(downloadStream);
+                await downloadWriter.WriteLineAsync("Download");
+                await downloadWriter.WriteLineAsync(currentServerPath + @"\" + fileName);
+                await downloadWriter.FlushAsync();
 
                 viewModel.DownloadingFiles.Add(fileName);
 
-                var reader = new StreamReader(stream);
+                var downloadReader = new StreamReader(downloadStream);
                 string content = "";
                 try
                 {
-                    content = await reader.ReadToEndAsync();
+                    content = await downloadReader.ReadToEndAsync();
                 }
                 catch
                 {
-                    viewModel.DownloadingFiles.Add(fileName + " не удалось скачать");
+                    viewModel.DownloadingFiles.Add(fileName + " не удалось скачать: сервер оборвал соединение.");
                     return;
                 }
 
@@ -203,8 +245,7 @@
                 {
                     textFile.WriteLine(content);
                 }
-
-                viewModel.DownloadingFiles.Add(fileName + " скачался!");
+                
                 viewModel.DownloadedFiles.Add(fileName);
             }            
         }
