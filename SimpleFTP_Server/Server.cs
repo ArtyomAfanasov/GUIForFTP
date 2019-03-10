@@ -106,7 +106,7 @@
                         break;
                     case "path":
                         answer = new DirectoryInfo(Directory.GetCurrentDirectory()).
-                            Parent.Parent.FullName;
+                            FullName;
                         Console.WriteLine($"Буду отправлять: {answer}");
                         writer.WriteLine(answer);
                         writer.Flush();
