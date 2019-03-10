@@ -170,7 +170,7 @@
         /// <param name="ChosenFileName"></param>
         public void OpenDownloadedFileLocation(string ChosenFileName)
         {
-            var pathToChosenFile = clientModel.pathToSaveFileModel + @"\" + ChosenFileName;
+            var pathToChosenFile = clientModel.pathToSaveFileModel;
             
             openDialog.InitialDirectory = pathToChosenFile;                                  
 
