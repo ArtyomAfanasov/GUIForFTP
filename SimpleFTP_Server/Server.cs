@@ -96,8 +96,7 @@
                             answer = Deserialize(GetArrayOfFilesAndDirectoies(path));                            
                             writer.WriteLine(answer);
                             writer.Flush();
-                            Console.WriteLine($"Список файлов и папок отправлен.\n");
-                            //currentClient.Close();
+                            Console.WriteLine($"Список файлов и папок отправлен.\n");                            
                             break;
                         case "Download":
                             answer = DownloadFile(path);                            
@@ -111,8 +110,7 @@
                                 FullName;                            
                             writer.WriteLine(answer);
                             writer.Flush();
-                            Console.WriteLine($"Путь, на который смотрит сервер, отправлен.\n");
-                            //currentClient.Close();
+                            Console.WriteLine($"Путь, на который смотрит сервер, отправлен.\n");                            
                             break;
                     }
                 }

@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.IO;
     using System.Net.Sockets;
     using System.Threading.Tasks;
@@ -39,22 +38,12 @@
             modelPort = portFromVM;
             modelAddress = addressFromVM;
             this.viewModel = viewModel;
-        }
-
-        /// <summary>
-        /// Коллекция файлов и папок для передачи VM
-        /// </summary>
-        //private ObservableCollection<string> directoriesAndFiles = new ObservableCollection<string>();        
+        }         
 
         /// <summary>
         /// Стек для возврата на уровни выше
         /// </summary>
-        private Stack<string> workingPath = new Stack<string>();
-
-        /// <summary>
-        /// Коллекция флагов, определяющих директорию
-        /// </summary>
-        //private List<bool> isDirectory = new List<bool>();        
+        private Stack<string> workingPath = new Stack<string>();              
 
         /// <summary>
         /// Директория, на которую "смотрит" сервер
@@ -94,8 +83,7 @@
 
         /// <summary>
         /// Подключение к новому серверу
-        /// </summary>
-        /// <returns></returns>
+        /// </summary>        
         public async Task ConnectToServerFirstTime()
         {
             if (GUIClient.Connected)
@@ -103,8 +91,7 @@
                 ShutdownGUIClient();
             }
 
-            GUIClient = await Task.Factory.StartNew(() =>
-                        new TcpClient(modelAddress, Convert.ToInt32(modelPort)));
+            GUIClient = await Task.Run(() => new TcpClient(modelAddress, Convert.ToInt32(modelPort)));
             GUIStream = GUIClient.GetStream();
             GUIWriter = new StreamWriter(GUIStream);
             GUIReader = new StreamReader(GUIStream);
@@ -118,8 +105,7 @@
             GUIWriter.Close();
             GUIReader.Close();
             GUIStream.Close();
-            GUIClient.Close();
-            serverPath = "";
+            GUIClient.Close();            
         }
 
         /// <summary>
@@ -139,10 +125,10 @@
 
                 currentServerPath = serverPath;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 ShutdownGUIClient();
-                MessageBox.Show("Наблюдаемый путь. Сервер оборвал соединение.");
+                MessageBox.Show("Сервер оборвал соединение.");
             }                                                                         
         }
 
@@ -205,49 +191,71 @@
                     }
                 }                
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 ShutdownGUIClient();
-                MessageBox.Show("Обновление директорий. Сервер оборвал соединение.");
+                MessageBox.Show("Сервер оборвал соединение.");
             }            
         }
         
         /// <summary>
-        /// Запрос серверу на скачивание файла
+        /// Запрос серверу на скачивание файла.
         /// </summary>
-        /// <param name="fileName">Имя скачиваемого файла</param>        
-        public async Task DownloadFile(string fileName)
-        {            
-            using (var client = await Task.Factory.StartNew(() =>
-                new TcpClient(modelAddress, Convert.ToInt32(modelPort))))
+        /// <param name="fileName">Имя скачиваемого файла.</param> 
+        /// <param name="isDownloadAll">Это вызов метода для загрузки всех файлов в папке?</param>
+        public async Task DownloadFile(string fileName, bool isDownloadAll)
+        {
+            if (!isDownloadAll)
             {
-                var downloadStream = client.GetStream();
-                var downloadWriter = new StreamWriter(downloadStream);
-                await downloadWriter.WriteLineAsync("Download");
-                await downloadWriter.WriteLineAsync(currentServerPath + @"\" + fileName);
-                await downloadWriter.FlushAsync();
+                viewModel.Active.Add("Скачать файл");
+            }
 
-                viewModel.DownloadingFiles.Add(fileName);
+            TcpClient downloadClient = null;
+            NetworkStream downloadStream = null;
+            StreamWriter downloadWriter = null;
+            StreamReader downloadReader = null;
 
-                var downloadReader = new StreamReader(downloadStream);
-                string content = "";
-                try
+            try
+            {
+                using (downloadClient = await Task.Run(() =>
+                    new TcpClient(modelAddress, Convert.ToInt32(modelPort))))
                 {
-                    content = await downloadReader.ReadToEndAsync();
-                }
-                catch
-                {
-                    viewModel.DownloadingFiles.Add(fileName + " не удалось скачать: сервер оборвал соединение.");
-                    return;
-                }
+                    downloadStream = downloadClient.GetStream();
+                    downloadWriter = new StreamWriter(downloadStream);
+                    await downloadWriter.WriteLineAsync("Download");
+                    await downloadWriter.WriteLineAsync(currentServerPath + @"\" + fileName);
+                    await downloadWriter.FlushAsync();
 
-                using (var textFile = new StreamWriter(pathToSaveFileModel + @"\" + fileName))
-                {
-                    textFile.WriteLine(content);
-                }
-                
-                viewModel.DownloadedFiles.Add(fileName);
-            }            
+                    viewModel.DownloadingFiles.Add(fileName);
+
+                    downloadReader = new StreamReader(downloadStream);
+                    string content = "";
+                    try
+                    {
+                        content = await downloadReader.ReadToEndAsync();
+                    }
+                    catch
+                    {                        
+                        downloadReader.Close();
+                        downloadWriter.Close();
+                        downloadStream.Close();
+                        downloadClient.Close();
+                        viewModel.DownloadingFiles.Add(fileName + " не удалось скачать: сервер оборвал соединение.");
+                        return;
+                    }
+
+                    using (var textFile = new StreamWriter(pathToSaveFileModel + @"\" + fileName))
+                    {
+                        textFile.WriteLine(content);
+                    }
+
+                    viewModel.DownloadedFiles.Add(fileName);
+                }                  
+            }
+            catch (SocketException)
+            {               
+                viewModel.DownloadingFiles.Add($"Не удалось скачать файл {fileName}: подключение к серверу не удалось.");
+            }
         }
 
         /// <summary>
@@ -255,6 +263,7 @@
         /// </summary>        
         public void DownloadAllFiles()
         {
+            viewModel.Active.Add("Скачать все файлы");
             // в случае, если путь для загрузок выбран корректный, но до подключения к серверу.
             // И чтобы после этого и после подлючения к серверу можно было качать файлы в уже выбранный корректный путь 
             if (((MainWindow)Application.Current.MainWindow).textBoxSavePath.Text != "")
@@ -268,7 +277,7 @@
             {                
                 foreach (FileInfo file in directoryInfo.GetFiles())
                 {                   
-                    new Task(async () => await DownloadFile(file.Name)).
+                    new Task(async () => await DownloadFile(file.Name, true)).
                             Start(TaskScheduler.FromCurrentSynchronizationContext());                    
                 }
             }            

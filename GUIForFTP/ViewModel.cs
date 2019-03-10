@@ -10,7 +10,12 @@
     /// Класс, соединяющий модель и представление
     /// </summary>
     class ViewModel
-    {                   
+    {                  
+        public ViewModel()
+        {
+            Active = new ObservableCollection<string>();
+        }
+
         /// <summary>
         /// Объект Model
         /// </summary>
@@ -33,6 +38,23 @@
         /// </summary>
         public ObservableCollection<string> DownloadedFiles { get; set; }
             = new ObservableCollection<string>();
+
+        /// <summary>
+        /// Активность пользователя.
+        /// </summary>
+        private ObservableCollection<string> active;
+
+        /// <summary>
+        /// Активность пользователя.
+        /// </summary>
+        public ObservableCollection<string> Active
+        {
+            get => active;
+            set
+            {                
+                active = value;
+            }
+        }            
 
         /// <summary>
         /// Коллекция флагов, определяющих директорию
@@ -89,8 +111,10 @@
         /// <param name="portFromThisViewModel">Порт, полученный от Vm</param>
         /// <param name="addressFromThisViewModel">Адресс, полученный от VM</param>
         public async void Connect(string portFromThisViewModel, string addressFromThisViewModel)
-        {            
-            //DirectoriesAndFiles.Clear(); // todo
+        {
+            Active.Clear();           
+            Active.Add("Ваша активность:");
+            
             clientModel = new ClientModel(portFromThisViewModel, addressFromThisViewModel, this);
 
             await clientModel.ConnectToServerFirstTime();
@@ -120,7 +144,7 @@
                 PathToSaveFile = ((MainWindow)Application.Current.MainWindow).textBoxSavePath.Text;
             }
             
-            await clientModel.DownloadFile(fileName);    // ?????? todo обработка ошибок                                
+            await clientModel.DownloadFile(fileName, false);    // ?????? todo обработка ошибок                                
         }
 
         /// <summary>
@@ -128,14 +152,14 @@
         /// </summary>        
         public void DownloadAllFiles()
         {
-            try
+            if (clientModel != null)
             {
                 clientModel.DownloadAllFiles();
-            }           
-            catch (NullReferenceException)
-            {    
-                MessageBox.Show("Чтобы скачать все файлы в папке сначала необходимо подключится к серверу");
             }
+            else
+            {
+                MessageBox.Show("Чтобы скачать все файлы в папке сначала необходимо подключится к серверу");
+            }                                                               
         }
     }
 }

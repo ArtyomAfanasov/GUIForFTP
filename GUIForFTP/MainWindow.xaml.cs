@@ -14,7 +14,7 @@
             InitializeComponent();
             DataContext = viewModel;
             viewModel.Port = "8888";
-            viewModel.Address = "127.0.0.1";
+            viewModel.Address = "127.0.0.1";            
         }
 
         /// <summary>
@@ -49,5 +49,21 @@
         {            
             viewModel.DownloadAllFiles();          
         }
+
+        private void clearActivity_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            viewModel.Active.Clear();
+            viewModel.Active.Add("Ваша активность:");
+        }
+
+        private void DownloadingFiles_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void DownloadedFile_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+
+        }        
     }
 }
