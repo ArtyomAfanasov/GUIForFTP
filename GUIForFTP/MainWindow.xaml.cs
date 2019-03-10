@@ -54,16 +54,16 @@
         {
             viewModel.Active.Clear();
             viewModel.Active.Add("Ваша активность:");
-        }
-
-        private void DownloadingFiles_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-
-        }
+        }        
 
         private void DownloadedFile_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            if (((ListBox)sender).SelectedItem == null) // если выбрана рамка ListBox'a
+            {
+                return;
+            }
 
+            viewModel.OpenDownloadedFileLocation(((ListBox)sender).SelectedItem.ToString());
         }        
     }
 }

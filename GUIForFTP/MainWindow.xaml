@@ -32,14 +32,14 @@
                 </Grid.RowDefinitions>
                 <Button Grid.Row="0" Grid.Column="2" Margin="10" Content="Скачать все файлы"
                     Name="buttonDownloadAll" PreviewMouseUp="buttonDownloadAll_PreviewMouseUp"/>
-                
+
                 <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Vertical" Grid.ColumnSpan="2" Margin="0,0,0.2,230.2" Grid.RowSpan="2">
                     <Label Content="Папка в файловой системе для скачивания файлов:"/>
                     <TextBox Name="textBoxSavePath"  Width="550" TextWrapping="Wrap" Margin="2"
                         Text="{Binding PathToSaveFile, 
                         Mode=OneWayToSource}"/>
                 </StackPanel>
-                
+
                 <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="2" Margin="2"
                          x:Name="listBox" ItemsSource="{Binding Path=DirectoriesAndFiles, Mode=OneWay}"
                          MouseDoubleClick="listBox_MouseDoubleClick"/>
@@ -64,25 +64,25 @@
         <TabItem Header="Загрузки">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="33*"/>
+                    <ColumnDefinition Width="359*"/>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="393*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="0.07*"/>
+                    <RowDefinition Height="0.1*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Content="Скачиваются"/>
-                <Label Grid.Row="0" Grid.Column="2" Content="Скачались"/>
+                <Label Grid.Row="0" Grid.Column="0" Content="Скачиваются" Grid.ColumnSpan="2" Margin="1" Grid.RowSpan="2"/>
+                <Label Grid.Row="0" Grid.Column="2" Content="Скачались" Grid.ColumnSpan="2" Margin="1" Grid.RowSpan="2"/>
 
-                <ListBox Grid.Row="1" Grid.Column="0" Margin="2"
-                         ItemsSource="{Binding Path=DownloadingFiles, Mode=OneWay}"
-                         Name="DownloadingFiles" MouseDoubleClick="DownloadingFiles_MouseDoubleClick"/>
-                <GridSplitter Grid.Row="2" Grid.Column="1" ShowsPreview="False" Width="3"
-                    HorizontalAlignment="Center" VerticalAlignment="Stretch" />
-                <ListBox Grid.Row="1" Grid.Column="2" Margin="2" 
+                <ListBox Grid.Row="1" Grid.Column="0" Margin="2,2.2,2,2.4"
+                         ItemsSource="{Binding Path=DownloadingFiles, Mode=OneWay}" Grid.ColumnSpan="2"/>
+                <GridSplitter Grid.Row="1" Grid.Column="2" ShowsPreview="False" Width="3"
+                    HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="0,0.2,0.2,0.4" />
+                <ListBox Grid.Row="1" Grid.Column="3" Margin="1.8,2.2,2,2.4" 
                          ItemsSource="{Binding Path=DownloadedFiles, Mode=OneWay}"
-                         Name="DownloadedFile" MouseDoubleClick="DownloadedFile_MouseDoubleClick"/>
+                         Name="DownloadedFile" PreviewMouseDoubleClick="DownloadedFile_MouseDoubleClick"/>
             </Grid>
         </TabItem>
 
@@ -95,6 +95,9 @@
                 <TextBlock TextWrapping="Wrap">Папкой для загрузки файлов, до того как её изменил пользователь, является GUIForFTPDonwload, находящаяся в папке с .exe файлом для запуска приложения</TextBlock>
                 <TextBlock/>
                 <TextBlock>В меню "Загрузки" можно менять ширину левого и правого поля вывода.</TextBlock>
+                <TextBlock/>
+                <TextBlock TextWrapping="Wrap">Можно открыть проводник с возможностью открыть скачанные файлы. 
+                    Для этого сделайте двойной клик ЛКМ по файлу, находящемуся в списке "Скачались" в меню "Загрузки".</TextBlock>
             </StackPanel>
         </TabItem>
     </TabControl>
