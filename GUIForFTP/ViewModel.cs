@@ -121,7 +121,10 @@
 
             await clientModel.ConnectToServerFirstTime();
             await clientModel.GetServerPathOnConnectionToServer();
-            await clientModel.ShowDirectoriesTree(false, "");                  
+            await clientModel.ShowDirectoriesTree(false, "");
+
+            ((MainWindow)Application.Current.MainWindow).buttonConnect.IsEnabled = true; // против спама кнопки подключиться, из-за которого появляется исключение в методе обновления каталогов
+            ((MainWindow)Application.Current.MainWindow).buttonConnect.Content = "Подключение"; 
         }
 
         /// <summary>

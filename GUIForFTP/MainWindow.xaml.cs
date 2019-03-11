@@ -25,6 +25,7 @@
         private void buttonConnect_MouseUp(object sender, MouseButtonEventArgs e)
         {            
             buttonConnect.IsEnabled = false;
+            buttonConnect.Content = "Подключаюсь";
             viewModel.Connect(viewModel.Port, viewModel.Address);                        
         }
 
