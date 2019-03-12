@@ -4,15 +4,18 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.ComponentModel;
     using System.Diagnostics;
     using System.IO;
+    using System.Net.Sockets;
+    using System.Runtime.CompilerServices;
     using System.Text.RegularExpressions;
     using System.Windows;
 
     /// <summary>
     /// Класс, соединяющий модель и представление
     /// </summary>
-    class ViewModel
+    class ViewModel : INotifyPropertyChanged
     {                                  
         /// <summary>
         /// Объект Model
@@ -106,7 +109,50 @@
                 }                                                                 
             }
         }
-                    
+
+        /// <summary>
+        /// Контент кнопки подключения
+        /// </summary>
+        private string actionConnectButton = "Подключиться";
+
+        /// <summary>
+        /// Для изменения надписи на кнопке подключения после попыток подключиться.
+        /// </summary>
+        public string ActionConnectButton
+        {
+            get => actionConnectButton;
+            set
+            {
+                actionConnectButton = value;
+                OnPropertyChanged("ActionConnectButton");
+            }
+        }
+
+        /// <summary>
+        /// Доступна ли кнопка подключения.
+        /// </summary>
+        private bool connectButtonIsEnable = true;
+
+        /// <summary>
+        /// Для изменения доступности кнопки во время подключения.
+        /// </summary>
+        public bool ConnectButtonIsEnable
+        {
+            get => connectButtonIsEnable;
+            set
+            {
+                connectButtonIsEnable = value;
+                OnPropertyChanged("ConnectButtonIsEnable");
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged([CallerMemberName]string prop = "")
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(prop));
+        }
+
         /// <summary>
         /// Подключиться к серверу
         /// </summary>
@@ -119,12 +165,25 @@
             
             clientModel = new ClientModel(portFromThisViewModel, addressFromThisViewModel, this);
 
-            await clientModel.ConnectToServerFirstTime();
-            await clientModel.GetServerPathOnConnectionToServer();
-            await clientModel.ShowDirectoriesTree(false, "");
-
-            ((MainWindow)Application.Current.MainWindow).buttonConnect.IsEnabled = true; // против спама кнопки подключиться, из-за которого появляется исключение в методе обновления каталогов
-            ((MainWindow)Application.Current.MainWindow).buttonConnect.Content = "Подключение"; 
+            ConnectButtonIsEnable = false;
+            ActionConnectButton = "Подключаюсь";
+            try
+            {
+                await clientModel.ConnectToServerFirstTime();
+                await clientModel.GetServerPathOnConnectionToServer();
+                await clientModel.ShowDirectoriesTree(false, "");
+            }
+            catch (SocketException)
+            {
+                Active.Clear();
+                DirectoriesAndFiles.Clear();
+                MessageBox.Show($"Не удалось подключиться к серверу {Address}:{Port}");
+            }
+            finally
+            {
+                ActionConnectButton = "Подключиться";
+                ConnectButtonIsEnable = true;                
+            }
         }
 
         /// <summary>

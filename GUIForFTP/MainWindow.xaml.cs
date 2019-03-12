@@ -20,14 +20,7 @@
         /// <summary>
         /// Объект VM
         /// </summary>
-        private ViewModel viewModel = new ViewModel();
-
-        private void buttonConnect_MouseUp(object sender, MouseButtonEventArgs e)
-        {            
-            buttonConnect.IsEnabled = false;
-            buttonConnect.Content = "Подключаюсь";
-            viewModel.Connect(viewModel.Port, viewModel.Address);                        
-        }
+        private ViewModel viewModel = new ViewModel();       
 
         private void listBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -45,18 +38,7 @@
             {                
                 viewModel.DownloadFile(((ListBox)sender).SelectedItem.ToString());
             }                                      
-        }
-
-        private void buttonDownloadAll_PreviewMouseUp(object sender, MouseButtonEventArgs e)
-        {            
-            viewModel.DownloadAllFiles();          
-        }
-
-        private void clearActivity_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            viewModel.Active.Clear();
-            viewModel.Active.Add("Ваша активность:");
-        }        
+        }              
 
         private void DownloadedFile_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -66,6 +48,22 @@
             }
 
             viewModel.OpenDownloadedFileLocation(((ListBox)sender).SelectedItem.ToString());
-        }        
+        }
+
+        private void ButtonConnect_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.Connect(viewModel.Port, viewModel.Address);
+        }
+
+        private void ClearActivity_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.Active.Clear();
+            viewModel.Active.Add("Ваша активность:");
+        }
+
+        private void ButtonDownloadAll_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.DownloadAllFiles();
+        }
     }
 }

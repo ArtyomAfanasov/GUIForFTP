@@ -17,7 +17,7 @@
             }
             else
             {
-                MessageBox.Show(e.Exception.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(e.Exception.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Warning);                                
             }                                     
             e.Handled = true;
         }

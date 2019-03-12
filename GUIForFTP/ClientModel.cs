@@ -91,10 +91,17 @@
                 ShutdownGUIClient();
             }
 
-            GUIClient = await Task.Run(() => new TcpClient(modelAddress, Convert.ToInt32(modelPort)));
-            GUIStream = GUIClient.GetStream();
-            GUIWriter = new StreamWriter(GUIStream);
-            GUIReader = new StreamReader(GUIStream);
+            try
+            {
+                GUIClient = await Task.Run(() => new TcpClient(modelAddress, Convert.ToInt32(modelPort)));
+                GUIStream = GUIClient.GetStream();
+                GUIWriter = new StreamWriter(GUIStream);
+                GUIReader = new StreamReader(GUIStream);
+            }
+            catch (SocketException)
+            {
+                throw new SocketException();
+            }
         }
 
         /// <summary>
