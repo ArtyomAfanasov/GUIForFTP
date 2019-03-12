@@ -131,18 +131,18 @@
         /// <summary>
         /// Доступна ли кнопка подключения.
         /// </summary>
-        private bool connectButtonIsEnable = true;
+        private bool connectButtonIsEnabled = true;
 
         /// <summary>
         /// Для изменения доступности кнопки во время подключения.
         /// </summary>
-        public bool ConnectButtonIsEnable
+        public bool ConnectButtonIsEnabled
         {
-            get => connectButtonIsEnable;
+            get => connectButtonIsEnabled;
             set
             {
-                connectButtonIsEnable = value;
-                OnPropertyChanged("ConnectButtonIsEnable");
+                connectButtonIsEnabled = value;
+                OnPropertyChanged("ConnectButtonIsEnabled");
             }
         }
 
@@ -165,7 +165,7 @@
             
             clientModel = new ClientModel(portFromThisViewModel, addressFromThisViewModel, this);
 
-            ConnectButtonIsEnable = false;
+            ConnectButtonIsEnabled = false;
             ActionConnectButton = "Подключаюсь";
             try
             {
@@ -182,7 +182,7 @@
             finally
             {
                 ActionConnectButton = "Подключиться";
-                ConnectButtonIsEnable = true;                
+                ConnectButtonIsEnabled = true;                
             }
         }
 

@@ -53,7 +53,7 @@
                         Text="{Binding Port, Mode=TwoWay}"/>
                 </StackPanel>
                 <Button Grid.Row="3" Grid.Column="2" Content="{Binding ActionConnectButton, Mode=OneWay}"
-                        IsEnabled="{Binding ConnectButtonIsEnable, Mode=OneWay}"
+                        IsEnabled="{Binding ConnectButtonIsEnabled, Mode=OneWay}"
                         Name="buttonConnect" Click="ButtonConnect_Click" Margin="10">
                 </Button>
                 <ListBox Grid.Row="1" Grid.Column="2" Margin="2"
