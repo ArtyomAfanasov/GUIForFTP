@@ -42,7 +42,8 @@
 
         private void DownloadedFile_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (((ListBox)sender).SelectedItem == null) // если выбрана рамка ListBox'a
+            // если выбрана рамка ListBox'a
+            if (((ListBox)sender).SelectedItem == null)
             {
                 return;
             }

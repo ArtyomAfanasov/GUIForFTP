@@ -240,15 +240,17 @@
             {
                 openDialog.ShowDialog();            
                 chosenFilePath = openDialog.FileName;
-                
-                if (chosenFilePath == "") // юзер нажал "отмена" или "крестик"
+
+                // Юзер нажал "отмена" или "крестик".
+                if (chosenFilePath == "") 
                 {
                     break;
                 }          
                 
                 try
                 {
-                    if (!Regex.IsMatch(chosenFilePath, patternExt)) // если файл имеет расширение, не указанное в паттерне
+                    // Если файл имеет расширение, не указанное в паттерне.
+                    if (!Regex.IsMatch(chosenFilePath, patternExt))
                     {
                         Process.Start("notepad.exe", chosenFilePath);
                     }
@@ -256,7 +258,8 @@
                     {
                         MessageBox.Show("Notepad не может открыть файлы с расширением " +
                         ".dll, .zip, .exe, .rar, .jpg, .jpeg, .torrent, .vsix, .png, .mkv, .avi, .iso, .bin, djvu");
-                        openDialog.FileName = ""; // чтобы избежать зацикливания, если пользователь хочет отменить выбор
+                        // Чтобы избежать зацикливания, если пользователь хочет отменить выбор.
+                        openDialog.FileName = ""; 
                     }
                 }
                 catch (Exception)
@@ -264,7 +267,8 @@
                     MessageBox.Show($"Не удалось открыть файл по пути: {chosenFilePath}");
                 }
             }
-            while (Regex.IsMatch(chosenFilePath, patternExt)); // пока выбранный файл имеет расширение, указанное в паттерне.
+            // Пока выбранный файл имеет расширение, указанное в паттерне.
+            while (Regex.IsMatch(chosenFilePath, patternExt)); 
         }              
     }
 }
